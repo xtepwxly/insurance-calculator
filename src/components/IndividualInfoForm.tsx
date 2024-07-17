@@ -72,7 +72,7 @@ const IndividualInfoForm: React.FC<IndividualInfoFormProps> = ({ individualInfo,
                 </SelectContent>
               </Select>
               <SelectTrigger>
-                <SelectValue placeholder="Select state" />
+                <SelectValue/>
               </SelectTrigger>
             </div>
           </div>

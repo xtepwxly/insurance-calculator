@@ -1,14 +1,12 @@
 const plugin = require('tailwindcss/plugin')
 
 module.exports = {
-  // Your existing Tailwind configuration
   theme: {
     extend: {
-      // Your existing extensions
+      // Your custom theme extensions, if any
     },
   },
   plugins: [
-    // Your existing plugins
     plugin(function({ addUtilities }) {
       const newUtilities = {
         '.sticky': {
@@ -18,5 +16,6 @@ module.exports = {
       }
       addUtilities(newUtilities, ['responsive', 'hover'])
     })
+    // Any other plugins you're using
   ],
 }

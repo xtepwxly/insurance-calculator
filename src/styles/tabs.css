@@ -1,0 +1,21 @@
+.tabs-list {
+  display: flex;
+  border-bottom: 1px solid #d1d5db; /* Tailwind's gray-300 */
+  margin-bottom: 1rem;
+}
+
+.tabs-trigger {
+  padding: 0.5rem 1rem;
+  color: #4b5563; /* Tailwind's gray-600 */
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+}
+
+.tabs-trigger:hover {
+  color: #2563eb; /* Tailwind's blue-600 */
+}
+
+.tabs-trigger:focus {
+  color: #2563eb; /* Tailwind's blue-600 */
+  border-color: #2563eb; /* Tailwind's blue-600 */
+}

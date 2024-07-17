@@ -1,21 +1,29 @@
-// components/ProductSelector.js
+// src/components/ProductSelector.tsx
+
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger } from './ui/tabs';
-import { PRODUCTS } from '../utils/insuranceUtils';
+import { Product } from '../utils/insuranceTypes';
 
-const ProductSelector = ({ selectedProduct, setSelectedProduct }) => {
+interface ProductSelectorProps {
+  selectedProduct: Product;
+  setSelectedProduct: (product: Product) => void;
+}
+
+const ProductSelector: React.FC<ProductSelectorProps> = ({ selectedProduct, setSelectedProduct }) => {
+  const handleTabChange = (tab: Product) => {
+    setSelectedProduct(tab);
+  };
+
   return (
-    <Tabs value={selectedProduct} onValueChange={setSelectedProduct} className="w-full">
-      <TabsList className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2">
-        {PRODUCTS.map(product => (
-          <TabsTrigger 
-            key={product} 
-            value={product}
-            className="w-full"
-          >
-            {product}
-          </TabsTrigger>
-        ))}
+    <Tabs>
+      <TabsList>
+        <TabsTrigger onClick={() => handleTabChange('LTD')}>LTD</TabsTrigger>
+        <TabsTrigger onClick={() => handleTabChange('STD')}>STD</TabsTrigger>
+        <TabsTrigger onClick={() => handleTabChange('Life / AD&D')}>Life / AD&D</TabsTrigger>
+        <TabsTrigger onClick={() => handleTabChange('Accidents')}>Accidents</TabsTrigger>
+        <TabsTrigger onClick={() => handleTabChange('Dental')}>Dental</TabsTrigger>
+        <TabsTrigger onClick={() => handleTabChange('Vision')}>Vision</TabsTrigger>
+        <TabsTrigger onClick={() => handleTabChange('Critical Illness/Cancer')}>Critical Illness/Cancer</TabsTrigger>
       </TabsList>
     </Tabs>
   );

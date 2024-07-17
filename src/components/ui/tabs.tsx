@@ -1,44 +1,33 @@
+// src/components/ui/tabs.tsx
+
 import React from 'react';
 
 interface TabsProps {
-  value: string;
-  onValueChange: (value: string) => void;
   children: React.ReactNode;
-  className?: string;
 }
-
-export const Tabs: React.FC<TabsProps> = ({ children, value, onValueChange, className = '' }) => (
-  <div className={className}>
-    {React.Children.map(children, child => {
-      if (React.isValidElement(child)) {
-        return React.cloneElement(child, { value, onValueChange } as any);
-      }
-      return child;
-    })}
-  </div>
-);
-
-interface TabsListProps {
-  children: React.ReactNode;
-  className?: string;
-}
-
-export const TabsList: React.FC<TabsListProps> = ({ children, className = '' }) => (
-  <div className={`flex ${className}`}>{children}</div>
-);
 
 interface TabsTriggerProps {
-  value: string;
+  onClick: () => void;
   children: React.ReactNode;
-  className?: string;
-  onValueChange?: (value: string) => void;
 }
 
-export const TabsTrigger: React.FC<TabsTriggerProps> = ({ children, value, onValueChange, className = '' }) => (
-  <button
-    className={`px-4 py-2 ${className}`}
-    onClick={() => onValueChange && onValueChange(value)}
-  >
-    {children}
-  </button>
-);
+export const Tabs: React.FC<TabsProps> = ({ children }) => {
+  return <div className="tabs">{children}</div>;
+};
+
+export const TabsList: React.FC<TabsProps> = ({ children }) => {
+  return <div className="tabs-list flex border-b border-gray-300 mb-4">{children}</div>;
+};
+
+export const TabsTrigger: React.FC<TabsTriggerProps> = ({ onClick, children }) => {
+  return (
+    <button
+      className="tabs-trigger px-4 py-2 text-gray-600 hover:text-blue-600 focus:text-blue-600 border-b-2 border-transparent focus:border-blue-600"
+      onClick={onClick}
+    >
+      {children}
+    </button>
+  );
+};
+
+export default { Tabs, TabsList, TabsTrigger };
