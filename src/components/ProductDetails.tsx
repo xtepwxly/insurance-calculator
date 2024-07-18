@@ -207,9 +207,6 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
                   ))}
                 </SelectContent>
               </Select>
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Select eligibility" />
-              </SelectTrigger>
             </div>
             {['LTD', 'Accidents', 'Dental', 'Vision'].includes(selectedProduct) && (
               <RadioGroup
@@ -251,7 +248,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
           ))}
         </ul>
         {renderIndividualInfoFields()}
-        <div className="absolute bottom-0 right-0 p-4">
+        <div className="bottom-0 right-0 p-4">
           <p className="text-lg font-semibold">{costView} Premium: {formattedPremium}</p>
         </div>
       </CardContent>
