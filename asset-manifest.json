@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/insurance-calculator/static/css/main.c02e476b.css",
+    "main.js": "/insurance-calculator/static/js/main.5d150ee3.js",
+    "index.html": "/insurance-calculator/index.html",
+    "main.c02e476b.css.map": "/insurance-calculator/static/css/main.c02e476b.css.map",
+    "main.5d150ee3.js.map": "/insurance-calculator/static/js/main.5d150ee3.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.c02e476b.css",
+    "static/js/main.5d150ee3.js"
+  ]
+}
