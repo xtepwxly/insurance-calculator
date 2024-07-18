@@ -69,171 +69,43 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
             </div>
           </>
         );
-      case 'Life / AD&D':
-        return (
-          <>
-            <div>
-              <Label htmlFor="age">Age</Label>
-              <Input
-                id="age"
-                name="age"
-                type="number"
-                value={individualInfo.age}
-                onChange={handleIndividualInfoChange}
-              />
-            </div>
-          </>
-        );
       default:
         return null;
     }
   };
 
   const renderProductBoxFields = () => {
-    switch (selectedProduct) {
-      case 'LTD':
-        return (
-          <>
-            <Select
-              value={productEligibility[selectedProduct]}
-              onValueChange={(value: string) => handleEligibilityChange(value as EligibilityOption)}
-            >
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Select eligibility" />
-              </SelectTrigger>
-              <SelectContent>
-                {eligibilityOptions.map((option) => (
-                  <SelectItem key={option} value={option}>{option}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <RadioGroup
-              value={plan}
-              onValueChange={(value: string) => setPlan(value as Plan)}
-              className="flex space-x-4"
-            >
-              <RadioGroupItem value="Basic">Basic</RadioGroupItem>
-              <RadioGroupItem value="Premium">Premium</RadioGroupItem>
-            </RadioGroup>
-          </>
-        );
-      case 'STD':
-        return (
-          <>
-            <Select
-              value={productEligibility[selectedProduct]}
-              onValueChange={(value: string) => handleEligibilityChange(value as EligibilityOption)}
-            >
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Select eligibility" />
-              </SelectTrigger>
-              <SelectContent>
-                {eligibilityOptions.map((option) => (
-                  <SelectItem key={option} value={option}>{option}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </>
-        );
-      case 'Life / AD&D':
-        return (
-          <>
-            <Select
-              value={productEligibility[selectedProduct]}
-              onValueChange={(value: string) => handleEligibilityChange(value as EligibilityOption)}
-            >
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Select eligibility" />
-              </SelectTrigger>
-              <SelectContent>
-                {eligibilityOptions.map((option) => (
-                  <SelectItem key={option} value={option}>{option}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <div>
-              <Label htmlFor="employeeElectedCoverage">Employee Elected Coverage</Label>
-              <Input
-                id="employeeElectedCoverage"
-                name="employeeElectedCoverage"
-                type="number"
-                value={lifeAddInfo.employeeElectedCoverage}
-                onChange={handleLifeAddInfoChange}
-              />
-              {errors.employeeElectedCoverage && (
-                <Alert variant="destructive">
-                  <AlertDescription>{errors.employeeElectedCoverage}</AlertDescription>
-                </Alert>
-              )}
-            </div>
-            {(productEligibility[selectedProduct] === 'Individual + Spouse' ||
-              productEligibility[selectedProduct] === 'Family') && (
-                <div>
-                  <Label htmlFor="spouseElectedCoverage">Spouse Elected Coverage</Label>
-                  <Input
-                    id="spouseElectedCoverage"
-                    name="spouseElectedCoverage"
-                    type="number"
-                    value={lifeAddInfo.spouseElectedCoverage}
-                    onChange={handleLifeAddInfoChange}
-                  />
-                  {errors.spouseElectedCoverage && (
-                    <Alert variant="destructive">
-                      <AlertDescription>{errors.spouseElectedCoverage}</AlertDescription>
-                    </Alert>
-                  )}
-                </div>
-              )}
-            {(productEligibility[selectedProduct] === 'Individual + Children' ||
-              productEligibility[selectedProduct] === 'Family') && (
-                <div>
-                  <Label htmlFor="numberOfChildren">Number of Children</Label>
-                  <Input
-                    id="numberOfChildren"
-                    name="numberOfChildren"
-                    type="number"
-                    value={lifeAddInfo.numberOfChildren}
-                    onChange={handleLifeAddInfoChange}
-                  />
-                </div>
-              )}
-          </>
-        );
-      case 'Accidents':
-      case 'Dental':
-      case 'Vision':
-      case 'Critical Illness/Cancer':
-        return (
-          <>
-            <Select
-              value={productEligibility[selectedProduct]}
-              onValueChange={(value: string) => handleEligibilityChange(value as EligibilityOption)}
-            >
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Select eligibility" />
-              </SelectTrigger>
-              <SelectContent>
-                {eligibilityOptions.map((option) => (
-                  <SelectItem key={option} value={option}>{option}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {['LTD', 'Accidents', 'Dental', 'Vision'].includes(selectedProduct) && (
-              <RadioGroup
-                value={plan}
-                onValueChange={(value: string) => setPlan(value as Plan)}
-                className="flex space-x-4"
-              >
-                <RadioGroupItem value="Basic">Basic</RadioGroupItem>
-                <RadioGroupItem value="Premium">Premium</RadioGroupItem>
-              </RadioGroup>
-            )}
-          </>
-        );
-      default:
-        return null;
-    }
+    const shouldShowRadioGroup = !['Critical Illness/Cancer'].includes(selectedProduct);
+  
+    return (
+      <>
+        {shouldShowRadioGroup && (
+          <RadioGroup
+            value={plan}
+            onValueChange={(value: string) => setPlan(value as Plan)}
+            className="flex space-x-4"
+          >
+            <RadioGroupItem value="Basic">Basic</RadioGroupItem>
+            <RadioGroupItem value="Premium">Premium</RadioGroupItem>
+          </RadioGroup>
+        )}
+        <Select
+          value={productEligibility[selectedProduct]}
+          onValueChange={(value: string) => handleEligibilityChange(value as EligibilityOption)}
+        >
+          <SelectTrigger className="w-full sm:w-[180px]">
+            <SelectValue placeholder="Select eligibility" />
+          </SelectTrigger>
+          <SelectContent>
+            {eligibilityOptions.map((option) => (
+              <SelectItem key={option} value={option}>{option}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </>
+    );
   };
+  
 
   const formattedPremium = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -244,24 +116,22 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
 
   return (
     <Card className='border-solid border-2'>
-      <CardHeader className="sticky top-0 bg-white z-10 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
+      <CardHeader className="sticky top-0 bg-white z-10 flex justify-between items-center">
         <h3 className="text-lg font-semibold">{selectedProduct}</h3>
-        <div className="space-y-4 mt-4">
-          <p className="text-lg font-semibold">{costView} Premium: {formattedPremium}</p>
+        <div className="flex space-x-4">
+          {renderProductBoxFields()}
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 relative">
         <ul className="list-disc list-inside mt-2">
           {bulletPoints.map((point, index) => (
             <li key={index}>{point}</li>
           ))}
         </ul>
-
-        <div className="sticky top-16 bg-white z-10 space-y-4 pb-4">
-          {renderProductBoxFields()}
-        </div>
-
         {renderIndividualInfoFields()}
+        <div className="absolute bottom-0 right-0 p-4">
+          <p className="text-lg font-semibold">{costView} Premium: {formattedPremium}</p>
+        </div>
       </CardContent>
     </Card>
   );
