@@ -98,9 +98,29 @@ const PREMIUM_CALCULATIONS: PremiumCalculation = {
     ACCIDENT_PREMIUMS[plan][eligibility],
 
   Dental: (_age, _annualSalary, plan, _lifeAddInfo, eligibility, zipCode, _state) => {
-    const region = getZipCodeRegion(zipCode);
+    const getZipCodeRegion = (zipCode: string): number => {
+      for (const [region, prefixes] of Object.entries(ZIP_CODE_REGIONS)) {
+        if (prefixes.some(prefix => zipCode.startsWith(prefix))) {
+          return parseInt(region);
+        }
+      }
+      return 1; // Default to region 1 if no match is found
+    };
+      const region = getZipCodeRegion(zipCode);
+  
+  // Ensure the plan, region, and eligibility exist in DENTAL_PREMIUMS
+  if (
+    DENTAL_PREMIUMS[plan] &&
+    DENTAL_PREMIUMS[plan][region] &&
+    DENTAL_PREMIUMS[plan][region][eligibility]
+  ) {
     return DENTAL_PREMIUMS[plan][region][eligibility];
-  },
+  } else {
+    console.warn(`No premium found for Dental: plan=${plan}, region=${region}, eligibility=${eligibility}`);
+    return 0; // Return 0 or some default value if the specific combination is not found
+  }
+},
+  
 
   Vision: (_age, _annualSalary, plan, _lifeAddInfo, eligibility, _zipCode, state) => {
     const stateCategory = getStateCategory(state);
