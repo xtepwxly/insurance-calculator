@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardContent } from './ui/card';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from './ui/select';
 import { US_STATES } from '../utils/insuranceUtils';
+import { loadStateFromZip } from '../utils/loadStateFromZip';
 
 interface IndividualInfo {
   age: number;
@@ -18,6 +19,23 @@ interface IndividualInfoFormProps {
 }
 
 const IndividualInfoForm: React.FC<IndividualInfoFormProps> = ({ individualInfo, handleIndividualInfoChange }) => {
+  const [zipToStateMap, setZipToStateMap] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const fetchZipToStateMap = async () => {
+      const map = await loadStateFromZip();
+      setZipToStateMap(map);
+    };
+
+    fetchZipToStateMap();
+  }, []);
+
+  useEffect(() => {
+    if (individualInfo.zipCode && zipToStateMap[individualInfo.zipCode]) {
+      handleIndividualInfoChange({ target: { name: 'state', value: zipToStateMap[individualInfo.zipCode] } } as React.ChangeEvent<HTMLSelectElement>);
+    }
+  }, [individualInfo.zipCode, zipToStateMap, handleIndividualInfoChange]);
+
   return (
     <Card className="mb-4">
       <CardHeader className="">Individual Information</CardHeader>
@@ -65,15 +83,15 @@ const IndividualInfoForm: React.FC<IndividualInfoFormProps> = ({ individualInfo,
                 value={individualInfo.state}
                 onValueChange={(value) => handleIndividualInfoChange({ target: { name: 'state', value } } as React.ChangeEvent<HTMLSelectElement>)}
               >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   {US_STATES.map((state) => (
                     <SelectItem key={state} value={state}>{state}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <SelectTrigger>
-                <SelectValue/>
-              </SelectTrigger>
             </div>
           </div>
         </div>

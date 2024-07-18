@@ -75,35 +75,157 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
   };
 
   const renderProductBoxFields = () => {
-    const shouldShowRadioGroup = !['Critical Illness/Cancer'].includes(selectedProduct);
-  
-    return (
-      <>
-        {shouldShowRadioGroup && (
-          <RadioGroup
-            value={plan}
-            onValueChange={(value: string) => setPlan(value as Plan)}
-            className="flex space-x-4"
-          >
-            <RadioGroupItem value="Basic">Basic</RadioGroupItem>
-            <RadioGroupItem value="Premium">Premium</RadioGroupItem>
-          </RadioGroup>
-        )}
-        <Select
-          value={productEligibility[selectedProduct]}
-          onValueChange={(value: string) => handleEligibilityChange(value as EligibilityOption)}
-        >
-          <SelectTrigger className="w-full sm:w-[180px]">
-            <SelectValue placeholder="Select eligibility" />
-          </SelectTrigger>
-          <SelectContent>
-            {eligibilityOptions.map((option) => (
-              <SelectItem key={option} value={option}>{option}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </>
-    );
+    switch (selectedProduct) {
+      case 'LTD':
+        return (
+          <>
+            <div>
+              <Select
+                value={productEligibility[selectedProduct]}
+                onValueChange={(value: string) => handleEligibilityChange(value as EligibilityOption)}
+              >
+                <SelectContent>
+                  {eligibilityOptions.map((option) => (
+                    <SelectItem key={option} value={option}>{option}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectValue placeholder="Select eligibility" />
+              </SelectTrigger>
+            </div>
+            <RadioGroup
+              value={plan}
+              onValueChange={(value: string) => setPlan(value as Plan)}
+              className="flex space-x-4"
+            >
+              <RadioGroupItem value="Basic">Basic</RadioGroupItem>
+              <RadioGroupItem value="Premium">Premium</RadioGroupItem>
+            </RadioGroup>
+          </>
+        );
+      case 'STD':
+        return (
+          <>
+            <div>
+              <Select
+                value={productEligibility[selectedProduct]}
+                onValueChange={(value: string) => handleEligibilityChange(value as EligibilityOption)}
+              >
+                <SelectContent>
+                  {eligibilityOptions.map((option) => (
+                    <SelectItem key={option} value={option}>{option}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectValue placeholder="Select eligibility" />
+              </SelectTrigger>
+            </div>
+          </>
+        );
+      case 'Life / AD&D':
+        return (
+          <>
+          <div>
+              <Select
+                value={productEligibility[selectedProduct]}
+                onValueChange={(value: string) => handleEligibilityChange(value as EligibilityOption)}
+              >
+                <SelectContent>
+                  {eligibilityOptions.map((option) => (
+                    <SelectItem key={option} value={option}>{option}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectValue placeholder="Select eligibility" />
+              </SelectTrigger>
+            </div>
+            <div>
+              <Label htmlFor="employeeElectedCoverage">Employee Elected Coverage</Label>
+              <Input
+                id="employeeElectedCoverage"
+                name="employeeElectedCoverage"
+                type="number"
+                value={lifeAddInfo.employeeElectedCoverage}
+                onChange={handleLifeAddInfoChange}
+              />
+              {errors.employeeElectedCoverage && (
+                <Alert variant="destructive">
+                  <AlertDescription>{errors.employeeElectedCoverage}</AlertDescription>
+                </Alert>
+              )}
+            </div>
+            {(productEligibility[selectedProduct] === 'Individual + Spouse' ||
+              productEligibility[selectedProduct] === 'Family') && (
+                <div>
+                  <Label htmlFor="spouseElectedCoverage">Spouse Elected Coverage</Label>
+                  <Input
+                    id="spouseElectedCoverage"
+                    name="spouseElectedCoverage"
+                    type="number"
+                    value={lifeAddInfo.spouseElectedCoverage}
+                    onChange={handleLifeAddInfoChange}
+                  />
+                  {errors.spouseElectedCoverage && (
+                    <Alert variant="destructive">
+                      <AlertDescription>{errors.spouseElectedCoverage}</AlertDescription>
+                    </Alert>
+                  )}
+                </div>
+              )}
+            {(productEligibility[selectedProduct] === 'Individual + Children' ||
+              productEligibility[selectedProduct] === 'Family') && (
+                <div>
+                  <Label htmlFor="numberOfChildren">Number of Children</Label>
+                  <Input
+                    id="numberOfChildren"
+                    name="numberOfChildren"
+                    type="number"
+                    value={lifeAddInfo.numberOfChildren}
+                    onChange={handleLifeAddInfoChange}
+                  />
+                </div>
+              )}
+          </>
+        );
+      case 'Accidents':
+      case 'Dental':
+      case 'Vision':
+      case 'Critical Illness/Cancer':
+        return (
+          <>
+            <div>
+              <Select
+                value={productEligibility[selectedProduct]}
+                onValueChange={(value: string) => handleEligibilityChange(value as EligibilityOption)}
+              >
+                <SelectContent>
+                  {eligibilityOptions.map((option) => (
+                    <SelectItem key={option} value={option}>{option}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectValue placeholder="Select eligibility" />
+              </SelectTrigger>
+            </div>
+            {['LTD', 'Accidents', 'Dental', 'Vision'].includes(selectedProduct) && (
+              <RadioGroup
+                value={plan}
+                onValueChange={(value: string) => setPlan(value as Plan)}
+                className="flex space-x-4"
+              >
+                <RadioGroupItem value="Basic">Basic</RadioGroupItem>
+                <RadioGroupItem value="Premium">Premium</RadioGroupItem>
+              </RadioGroup>
+            )}
+          </>
+        );
+      default:
+        return null;
+    }
   };
   
 
