@@ -1,31 +1,30 @@
-// src/components/ProductSelector.tsx
-
 import React from 'react';
-import { Tabs, TabsList, TabsTrigger } from './ui/tabs';
 import { Product } from '../utils/insuranceTypes';
+import '../styles/ProductTabs.css';
 
 interface ProductSelectorProps {
   selectedProduct: Product;
   setSelectedProduct: (product: Product) => void;
+  products: Product[];
 }
 
-const ProductSelector: React.FC<ProductSelectorProps> = ({ selectedProduct, setSelectedProduct }) => {
-  const handleTabChange = (tab: Product) => {
-    setSelectedProduct(tab);
-  };
-
+const ProductSelector: React.FC<ProductSelectorProps> = ({ selectedProduct, setSelectedProduct, products }) => {
   return (
-    <Tabs>
-      <TabsList>
-        <TabsTrigger onClick={() => handleTabChange('LTD')}>LTD</TabsTrigger>
-        <TabsTrigger onClick={() => handleTabChange('STD')}>STD</TabsTrigger>
-        <TabsTrigger onClick={() => handleTabChange('Life / AD&D')}>Life / AD&D</TabsTrigger>
-        <TabsTrigger onClick={() => handleTabChange('Accidents')}>Accidents</TabsTrigger>
-        <TabsTrigger onClick={() => handleTabChange('Dental')}>Dental</TabsTrigger>
-        <TabsTrigger onClick={() => handleTabChange('Vision')}>Vision</TabsTrigger>
-        <TabsTrigger onClick={() => handleTabChange('Critical Illness/Cancer')}>Critical Illness/Cancer</TabsTrigger>
-      </TabsList>
-    </Tabs>
+    <div className="product-tabs product-selector">
+  <ul className="product-tabs-list">
+    {products.map((product) => (
+      <li
+        key={product}
+        className={`product-tab-item ${selectedProduct === product ? 'active' : ''}`}
+        onClick={() => setSelectedProduct(product)}
+      >
+        <a href="#" onClick={(e) => e.preventDefault()} className="product-tab-link">
+          {product}
+        </a>
+      </li>
+    ))}
+  </ul>
+</div>
   );
 };
 

@@ -1,5 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import './styles/global.css'; // Add this import
+import './styles/global.css';
+import './styles/ProductTabs.css';
+import './styles/App.css';
 import { Product, EligibilityOption, IndividualInfo, LifeAddInfo, Plan, PremiumResult } from './utils/insuranceTypes';
 import { calculatePremiums, PRODUCTS, ELIGIBILITY_OPTIONS, PRODUCT_ELIGIBILITY_OPTIONS } from './utils/insuranceUtils';
 import CostEstimate from './components/CostEstimate';
@@ -7,6 +9,7 @@ import ProductSelector from './components/ProductSelector';
 import ProductDetails from './components/ProductDetails';
 import IndividualInfoForm from './components/IndividualInfoForm';
 import ActiveProductsToggle from './components/ActiveProductsToggle';
+
 
 const initialIndividualInfo: IndividualInfo = {
   age: 45,
@@ -92,24 +95,26 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="container mx-auto p-4 flex flex-grow overflow-y-auto">
-        <div className='main-container'>
-          <div className='flex'>
-            <h1 className="text-2xl font-bold mb-4 text-center">JOHN</h1>
-            <CostEstimate
-              totalPremium={calculateTotalPremium()}
-              costView={costView}
-              setCostView={setCostView}
-            />
-          </div>
-          <div className="flex px-16  gap-4">
-            <div className="lg:col-span-2 space-y-4">
-              <ProductSelector
-                selectedProduct={selectedProduct}
-                setSelectedProduct={setSelectedProduct}
+      <div className="container mx-auto p-4 flex flex-grow overflow-y-auto pr-10">
+        <div className="absolute top-0 left-0 p-4">
+          <h1 className="text-2xl font-bold">JOHN</h1>
+        </div>
+        <div className="main-container flex w-full">
+          <div className="w-3/4 flex flex-col items-center">
+            <div className="w-full mb-4 mt-16">
+              <IndividualInfoForm
+                individualInfo={individualInfo}
+                handleIndividualInfoChange={handleInputChange}
               />
-
-              <ProductDetails
+            </div>
+            <div className="w-full">
+              <div className="product-tabs-container">
+                <ProductSelector
+                  selectedProduct={selectedProduct}
+                  setSelectedProduct={setSelectedProduct}
+                  products={PRODUCTS}
+                />
+                <ProductDetails
                   selectedProduct={selectedProduct}
                   productEligibility={productEligibility}
                   handleEligibilityChange={handleEligibilityChange}
@@ -123,18 +128,16 @@ function App() {
                   individualInfo={individualInfo}
                   handleIndividualInfoChange={handleInputChange}
                   PRODUCT_ELIGIBILITY_OPTIONS={PRODUCT_ELIGIBILITY_OPTIONS}
-              />
+                />
+              </div>
             </div>
           </div>
-
-        </div>
-        <div className='rightrail'>
-          <div className="space-y-4">
-            <IndividualInfoForm
-              individualInfo={individualInfo}
-              handleIndividualInfoChange={handleInputChange}
+          <div className='rightrail w-1/4 space-y-4 overflow-y-auto' style={{maxHeight: 'calc(100vh - 2rem)'}}>
+            <CostEstimate
+              totalPremium={calculateTotalPremium()}
+              costView={costView}
+              setCostView={setCostView}
             />
-
             <ActiveProductsToggle
               products={products}
               handleProductToggle={handleProductToggle}

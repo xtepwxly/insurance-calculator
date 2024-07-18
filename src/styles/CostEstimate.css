@@ -1,0 +1,13 @@
+/* src/styles/CostEstimate.css */
+
+.cost-estimate {
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.cost-estimate h2 {
+  margin-top: 0;
+}
