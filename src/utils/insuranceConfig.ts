@@ -36,6 +36,19 @@ export const AGE_BANDED_RATES = [
   { minAge: 65, maxAge: 120, rate: 0.66 }
 ];
 
+export const AGE_BANDED_RATES_LIFE = [
+  { minAge: 0, maxAge: 29, rate: 0.11 },
+  { minAge: 30, maxAge: 34, rate: 0.13 },
+  { minAge: 35, maxAge: 39, rate: 0.15 },
+  { minAge: 40, maxAge: 44, rate: 0.18 },
+  { minAge: 45, maxAge: 49, rate: 0.26 },
+  { minAge: 50, maxAge: 54, rate: 0.40 },
+  { minAge: 55, maxAge: 59, rate: 0.59 },
+  { minAge: 60, maxAge: 64, rate: 0.89 },
+  { minAge: 65, maxAge: 69, rate: 1.68 },
+  { minAge: 70, maxAge: Infinity, rate: 2.71 },
+];
+
 export const LTD_CONFIG = {
   Basic: { maxBenefit: 8333.33, costPerHundred: 0.209 },
   Premium: { maxBenefit: 15000, costPerHundred: 0.305 }

@@ -23,13 +23,28 @@ import {
   LIFE_ADD_CONFIG,
   ACCIDENT_PREMIUMS,
   CRITICAL_ILLNESS_RATES,
-  PRODUCT_ELIGIBILITY_OPTIONS
+  PRODUCT_ELIGIBILITY_OPTIONS,
+  AGE_BANDED_RATES_LIFE
 } from './insuranceConfig';
 
 // Utility functions or constants can be added here
 const getAgeBandedRate = (age: number): number => {
-  const band = AGE_BANDED_RATES.find(band => age >= band.minAge && age <= band.maxAge);
-  return band ? band.rate : AGE_BANDED_RATES[AGE_BANDED_RATES.length - 1].rate;
+  const ageBand = AGE_BANDED_RATES_LIFE.find(band => age >= band.minAge && age <= band.maxAge);
+  return ageBand ? ageBand.rate : 0;
+};
+
+export const calculateLifeADDPremium = (coverageAmount: number, age: number, spouseCoverageAmount: number, numberOfChildren: number): number => {
+  const ageBandedRate = getAgeBandedRate(age);
+
+  const individualUnits = Math.min(coverageAmount / 1000, 150);
+  const individualPremium = individualUnits * ageBandedRate;
+
+  const spouseUnits = Math.min(spouseCoverageAmount / 1000, 20);
+  const spousePremium = spouseUnits * ageBandedRate;
+
+  const childrenPremium = numberOfChildren > 0 ? 2.5 : 0;
+
+  return individualPremium + spousePremium + childrenPremium;
 };
 
 const getZipCodeRegion = (zipCode: string): number => {
@@ -88,11 +103,16 @@ const PREMIUM_CALCULATIONS: PremiumCalculation = {
 
   'Life / AD&D': (age, _annualSalary, _plan, lifeAddInfo, eligibility, _zipCode, _state) => {
     const { employeeElectedCoverage, spouseElectedCoverage, numberOfChildren } = lifeAddInfo;
-    const ageFactor = age / 100;
-    let totalCoverage = employeeElectedCoverage;
-    if (eligibility.includes('Spouse')) totalCoverage += spouseElectedCoverage;
-    if (eligibility.includes('Children')) totalCoverage += numberOfChildren * LIFE_ADD_CONFIG.childCoverage;
-    return (totalCoverage / 1000) * LIFE_ADD_CONFIG.baseRate * (1 + ageFactor);
+
+    const individualUnits = Math.min(employeeElectedCoverage / 1000, 150);
+    const individualPremium = individualUnits * getAgeBandedRate(age);
+
+    const spouseUnits = Math.min(spouseElectedCoverage / 1000, 20);
+    const spousePremium = spouseUnits * getAgeBandedRate(age);
+
+    const childrenPremium = numberOfChildren > 0 ? 2.5 : 0;
+
+    return individualPremium + spousePremium + childrenPremium;
   },
 
   Accidents: (_age, _annualSalary, plan, _lifeAddInfo, eligibility, _zipCode, _state) =>
@@ -104,18 +124,8 @@ const PREMIUM_CALCULATIONS: PremiumCalculation = {
       console.warn(`Unsupported eligibility option for Dental: ${eligibility}`);
       return 0;
     }
-
-    const getZipCodeRegion = (zipCode: string): number => {
-      for (const [region, prefixes] of Object.entries(ZIP_CODE_REGIONS)) {
-        if (prefixes.some(prefix => zipCode.startsWith(prefix))) {
-          return parseInt(region);
-        }
-      }
-      return 1; // Default to region 1 if no match is found
-    };
-
     const region = getZipCodeRegion(zipCode);
-    
+
     if (
       DENTAL_PREMIUMS[plan] &&
       DENTAL_PREMIUMS[plan][region] &&
@@ -128,15 +138,15 @@ const PREMIUM_CALCULATIONS: PremiumCalculation = {
     }
   },
 
-  Vision: (_age, _annualSalary, plan, _lifeAddInfo, eligibility, _zipCode, state) => {
-    const stateCategory = getStateCategory(state);
-    return VISION_PREMIUMS[stateCategory][plan][eligibility];
-  },
-
-  'Critical Illness/Cancer': (age, _annualSalary, _plan, _lifeAddInfo, eligibility, _zipCode, _state) => {
-    return getCriticalIllnessRate(age, eligibility);
-  }
-};
+    Vision: (_age, _annualSalary, plan, _lifeAddInfo, eligibility, _zipCode, state) => {
+      const stateCategory = getStateCategory(state);
+      return VISION_PREMIUMS[stateCategory][plan][eligibility];
+    },
+  
+    'Critical Illness/Cancer': (age, _annualSalary, _plan, _lifeAddInfo, eligibility, _zipCode, _state) => {
+      return getCriticalIllnessRate(age, eligibility);
+    }
+  };
 
 export const calculatePremiums = (
   individualInfo: IndividualInfo,
