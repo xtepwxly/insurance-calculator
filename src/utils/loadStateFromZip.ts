@@ -11,9 +11,9 @@ export const loadStateFromZip = async (): Promise<Record<string, string>> => {
   return new Promise((resolve) => {
     Papa.parse<ZipCodeMapping>(csvText, {
       header: true,
-      complete: (results) => {
+      complete: (results: any) => {
         const zipToStateMap: Record<string, string> = {};
-        results.data.forEach((entry) => {
+        results.data.forEach((entry: any) => {
           zipToStateMap[entry.zipCode] = entry.state;
         });
         resolve(zipToStateMap);
