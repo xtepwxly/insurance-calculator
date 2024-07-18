@@ -7,7 +7,7 @@ interface ActiveProductsToggleProps {
   products: Record<Product, boolean>;
   handleProductToggle: (product: Product) => void;
   premiums: PremiumResult;
-  costView: 'Monthly' | 'Bi-weekly';
+  costView: 'Month' | 'Bi-weekly';
 }
 
 const ActiveProductsToggle: React.FC<ActiveProductsToggleProps> = ({ 
@@ -28,7 +28,7 @@ const ActiveProductsToggle: React.FC<ActiveProductsToggleProps> = ({
             currency: 'USD',
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
-          }).format(costView === 'Monthly' ? premium : premium / 2);
+          }).format(costView === 'Month' ? premium : premium / 2);
 
           return (
             <div key={product} className="mb-2 flex justify-between items-center">

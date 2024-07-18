@@ -91,6 +91,26 @@ export const DENTAL_PREMIUMS: Record<Plan, Record<number, Record<EligibilityOpti
   }
 };
 
+export const CRITICAL_ILLNESS_RATES: {
+  [K in '<24' | '25-29' | '30-34' | '35-39' | '40-44' | '45-49' | '50-54' | '55-59' | '60-64' | '65-69' | '70-74' | '75+']: {
+    [E in EligibilityOption]: number
+  }
+} = {
+  '<24': { Individual: 5.55, 'Individual + Spouse': 9.15, 'Individual + Children': 8.10, Family: 11.70 },
+  '25-29': { Individual: 6.45, 'Individual + Spouse': 10.35, 'Individual + Children': 8.85, Family: 12.90 },
+  '30-34': { Individual: 7.65, 'Individual + Spouse': 12.30, 'Individual + Children': 10.20, Family: 14.85 },
+  '35-39': { Individual: 10.05, 'Individual + Spouse': 15.75, 'Individual + Children': 12.45, Family: 18.30 },
+  '40-44': { Individual: 13.50, 'Individual + Spouse': 21.00, 'Individual + Children': 16.05, Family: 23.25 },
+  '45-49': { Individual: 18.45, 'Individual + Spouse': 28.35, 'Individual + Children': 21.00, Family: 30.90 },
+  '50-54': { Individual: 24.30, 'Individual + Spouse': 37.20, 'Individual + Children': 26.85, Family: 39.60 },
+  '55-59': { Individual: 33.60, 'Individual + Spouse': 51.15, 'Individual + Children': 36.15, Family: 53.70 },
+  '60-64': { Individual: 44.55, 'Individual + Spouse': 67.50, 'Individual + Children': 47.10, Family: 70.05 },
+  '65-69': { Individual: 58.95, 'Individual + Spouse': 89.25, 'Individual + Children': 61.50, Family: 91.80 },
+  '70-74': { Individual: 77.85, 'Individual + Spouse': 117.60, 'Individual + Children': 80.40, Family: 120.15 },
+  '75+': { Individual: 109.05, 'Individual + Spouse': 164.25, 'Individual + Children': 111.60, Family: 166.80 }
+};
+
+
 export const ZIP_CODE_REGIONS: Record<number, string[]> = {
   1: ['350', '351', '354', '355', '360', '361', '363', '364', '366', '367', '368', '369', '716', '717', '718', '719', '720', '721', '723', '728', '335', '310', '312', '313', '314', '317', '318', '319', '150', '151', '153', '154', '155', '156', '157', '158', '159', '160', '161', '166', '248', '255', '257', '260', '265', '454', '456', '376', '380', '381', '382', '383', '384', '780', '783', '784', '785', '794', '798'],
   2: ['352', '356', '357', '358', '359', '362', '365', '856', '722', '724', '725', '726', '727', '729', '060', '061', '062', '063', '064', '322', '323', '324', '325', '326', '327', '328', '336', '337', '346', '347', '349', '470', '471', '473', '474', '700', '701', '704', '713', '714', '080', '082', '444', '445', '447', '453', '455', '457', '744', '748', '766', '767', '779', '781', '782', '793', '797', '799'],
@@ -107,4 +127,95 @@ export const STATE_CATEGORIES: Record<string, USState[]> = {
   Other: US_STATES.filter(state => !['AK', 'CA', 'CT', 'HI', 'NJ', 'NV', 'WA'].includes(state))
 };
 
-
+export const PRODUCT_BULLET_POINTS: Record<Product, Record<Plan, string[]>> = {
+  'LTD': {
+    'Basic': [
+      "Income protection",
+      "Protects Gross 1099 income",
+      "Benefit maximum of $8,333.33 per month",
+      "Guaranteed Issue"
+    ],
+    'Premium': [
+      "Protect your ability to earn an income",
+      "Protects Gross 1099 income",
+      "Benefit maximum of $15,000 per month",
+      "Guaranteed Issue"
+    ]
+  },
+  'STD': {
+    'Basic': [
+      "Income protection",
+      "Covers pregnancy",
+      "Benefit maximum of $1,200 per week",
+      "Guaranteed Issue"
+    ],
+    'Premium': [
+      "Income protection",
+      "Covers pregnancy",
+      "Benefit maximum of $1,200 per week",
+      "Guaranteed Issue"
+    ]
+  },
+  'Life / AD&D': {
+    'Basic': [
+      "$150,000 of coverage",
+      "Guaranteed issue",
+      "Coverage for spouse and children"
+    ],
+    'Premium': [
+      "$150,000 of coverage",
+      "Guaranteed issue",
+      "Coverage for spouse and children"
+    ]
+  },
+  'Accidents': {
+    'Basic': [
+      "Pays on and off job",
+      "Large benefit payouts",
+      "25% organized sport bonus"
+    ],
+    'Premium': [
+      "Pays on and off job",
+      "Large benefit payouts",
+      "25% organized sport bonus"
+    ]
+  },
+  'Vision': {
+    'Basic': [
+      "Frames and lenses every year",
+      "VSP Network"
+    ],
+    'Premium': [
+      "Frames and lenses every year",
+      "VSP Network"
+    ]
+  },
+  'Dental': {
+    'Basic': [
+      "Great benefit if your dentist is in network",
+      "$1000 annual maximum per person",
+      "Root canals covered in basic at 80% (typically root canals are major coverage)"
+    ],
+    'Premium': [
+      "If your dentist is out-of-network it doesn't matter",
+      "Pays the same percentage for out-of-network",
+      "$1,500 annual maximum per person",
+      "Root canals covered in basic at 80% (typically root canals are major coverage)",
+      "$1,000 child ortho (lifetime max)"
+    ]
+  },
+  'Critical Illness/Cancer': {
+    'Basic': [
+      "Pays a lump sum amount for initial diagnosis",
+      "Pays same lump sum for reoccurrence",
+      "Pays 100% on the initial diagnosis of invasive cancer",
+      "Dozens of covered illnesses"
+    ],
+    'Premium': [
+      "Pays a lump sum amount for initial diagnosis",
+      "Pays same lump sum for reoccurrence",
+      "Pays 100% on the initial diagnosis of invasive cancer",
+      "Dozens of covered illnesses"
+    ]
+  }
+};

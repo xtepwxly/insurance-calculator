@@ -28,7 +28,7 @@ const initialProducts: Record<Product, boolean> = {
 function App() {
   const [individualInfo, setIndividualInfo] = useState<IndividualInfo>(initialIndividualInfo);
   const [selectedProduct, setSelectedProduct] = useState<Product>('LTD');
-  const [costView, setCostView] = useState<'Monthly' | 'Bi-weekly'>('Monthly');
+  const [costView, setCostView] = useState<'Month' | 'Bi-weekly'>('Month');
   const [plan, setPlan] = useState<Plan>('Basic');
   const [products, setProducts] = useState<Record<Product, boolean>>(initialProducts);
   const [productEligibility, setProductEligibility] = useState<Record<Product, EligibilityOption>>(
