@@ -47,26 +47,6 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
       case 'STD':
         return (
           <>
-            <div>
-              <Label htmlFor="annualSalary">Annual Salary</Label>
-              <Input
-                id="annualSalary"
-                name="annualSalary"
-                type="number"
-                value={individualInfo.annualSalary}
-                onChange={handleIndividualInfoChange}
-              />
-            </div>
-            <div>
-              <Label htmlFor="age">Age</Label>
-              <Input
-                id="age"
-                name="age"
-                type="number"
-                value={individualInfo.age}
-                onChange={handleIndividualInfoChange}
-              />
-            </div>
           </>
         );
       default:
@@ -127,7 +107,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
       case 'Life / AD&D':
         return (
           <>
-          <div>
+            <div>
               <Select
                 value={productEligibility[selectedProduct]}
                 onValueChange={(value: string) => handleEligibilityChange(value as EligibilityOption)}
@@ -224,7 +204,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
         return null;
     }
   };
-  
+
 
   const formattedPremium = new Intl.NumberFormat('en-US', {
     style: 'currency',
