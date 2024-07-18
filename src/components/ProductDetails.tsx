@@ -7,7 +7,7 @@ import { Label } from './ui/label';
 import { Input } from './ui/input';
 import { Alert, AlertDescription } from './ui/alert';
 import { Product, EligibilityOption, Plan, LifeAddInfo, IndividualInfo } from '../utils/insuranceTypes';
-import { PRODUCT_BULLET_POINTS } from '../utils/insuranceConfig';
+import { PRODUCT_BULLET_POINTS, PRODUCT_ELIGIBILITY_OPTIONS } from '../utils/insuranceConfig';
 
 interface ProductDetailsProps {
   selectedProduct: Product;
@@ -22,7 +22,7 @@ interface ProductDetailsProps {
   costView: 'Month' | 'Bi-weekly';
   individualInfo: IndividualInfo;
   handleIndividualInfoChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
-  eligibilityOptions: EligibilityOption[];
+  PRODUCT_ELIGIBILITY_OPTIONS: Record<Product, EligibilityOption[]>;
 }
 
 const ProductDetails: React.FC<ProductDetailsProps> = ({
@@ -38,7 +38,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
   costView,
   individualInfo,
   handleIndividualInfoChange,
-  eligibilityOptions
+  PRODUCT_ELIGIBILITY_OPTIONS
 }) => {
   const bulletPoints = PRODUCT_BULLET_POINTS[selectedProduct][plan];
 
@@ -55,73 +55,35 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
   };
 
   const renderProductBoxFields = () => {
-    switch (selectedProduct) {
-      case 'LTD':
-        return (
+    return (
+      <>
+        <Select
+  value={productEligibility[selectedProduct]}
+  onValueChange={(value: string) => handleEligibilityChange(value as EligibilityOption)}
+>
+  <SelectTrigger className="w-full sm:w-[180px]">
+    <SelectValue placeholder="Select eligibility" />
+  </SelectTrigger>
+  <SelectContent>
+  {PRODUCT_ELIGIBILITY_OPTIONS[selectedProduct].map((option) => (
+    <SelectItem key={option} value={option}>{option}</SelectItem>
+  ))}
+</SelectContent>
+</Select>
+  
+        {['LTD', 'Accidents', 'Dental', 'Vision'].includes(selectedProduct) && (
+          <RadioGroup
+            value={plan}
+            onValueChange={(value: string) => setPlan(value as Plan)}
+            className="flex space-x-4"
+          >
+            <RadioGroupItem value="Basic">Basic</RadioGroupItem>
+            <RadioGroupItem value="Premium">Premium</RadioGroupItem>
+          </RadioGroup>
+        )}
+  
+        {selectedProduct === 'Life / AD&D' && (  
           <>
-            <div>
-              <Select
-                value={productEligibility[selectedProduct]}
-                onValueChange={(value: string) => handleEligibilityChange(value as EligibilityOption)}
-              >
-                <SelectContent>
-                  {eligibilityOptions.map((option) => (
-                    <SelectItem key={option} value={option}>{option}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Select eligibility" />
-              </SelectTrigger>
-            </div>
-            <RadioGroup
-              value={plan}
-              onValueChange={(value: string) => setPlan(value as Plan)}
-              className="flex space-x-4"
-            >
-              <RadioGroupItem value="Basic">Basic</RadioGroupItem>
-              <RadioGroupItem value="Premium">Premium</RadioGroupItem>
-            </RadioGroup>
-          </>
-        );
-      case 'STD':
-        return (
-          <>
-            <div>
-              <Select
-                value={productEligibility[selectedProduct]}
-                onValueChange={(value: string) => handleEligibilityChange(value as EligibilityOption)}
-              >
-                <SelectContent>
-                  {eligibilityOptions.map((option) => (
-                    <SelectItem key={option} value={option}>{option}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Select eligibility" />
-              </SelectTrigger>
-            </div>
-          </>
-        );
-      case 'Life / AD&D':
-        return (
-          <>
-            <div>
-              <Select
-                value={productEligibility[selectedProduct]}
-                onValueChange={(value: string) => handleEligibilityChange(value as EligibilityOption)}
-              >
-                <SelectContent>
-                  {eligibilityOptions.map((option) => (
-                    <SelectItem key={option} value={option}>{option}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Select eligibility" />
-              </SelectTrigger>
-            </div>
             <div>
               <Label htmlFor="employeeElectedCoverage">Employee Elected Coverage</Label>
               <Input
@@ -169,42 +131,10 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
                 </div>
               )}
           </>
-        );
-      case 'Accidents':
-      case 'Dental':
-      case 'Vision':
-      case 'Critical Illness/Cancer':
-        return (
-          <>
-            <div>
-              <Select
-                value={productEligibility[selectedProduct]}
-                onValueChange={(value: string) => handleEligibilityChange(value as EligibilityOption)}
-              >
-                <SelectContent>
-                  {eligibilityOptions.map((option) => (
-                    <SelectItem key={option} value={option}>{option}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            {['LTD', 'Accidents', 'Dental', 'Vision'].includes(selectedProduct) && (
-              <RadioGroup
-                value={plan}
-                onValueChange={(value: string) => setPlan(value as Plan)}
-                className="flex space-x-4"
-              >
-                <RadioGroupItem value="Basic">Basic</RadioGroupItem>
-                <RadioGroupItem value="Premium">Premium</RadioGroupItem>
-              </RadioGroup>
-            )}
-          </>
-        );
-      default:
-        return null;
-    }
+        )}
+      </>
+    );
   };
-
 
   const formattedPremium = new Intl.NumberFormat('en-US', {
     style: 'currency',

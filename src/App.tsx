@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import './styles/global.css'; // Add this import
 import { Product, EligibilityOption, IndividualInfo, LifeAddInfo, Plan, PremiumResult } from './utils/insuranceTypes';
-import { calculatePremiums, PRODUCTS, ELIGIBILITY_OPTIONS } from './utils/insuranceUtils';
+import { calculatePremiums, PRODUCTS, ELIGIBILITY_OPTIONS, PRODUCT_ELIGIBILITY_OPTIONS } from './utils/insuranceUtils';
 import CostEstimate from './components/CostEstimate';
 import ProductSelector from './components/ProductSelector';
 import ProductDetails from './components/ProductDetails';
@@ -110,19 +110,19 @@ function App() {
               />
 
               <ProductDetails
-                selectedProduct={selectedProduct}
-                productEligibility={productEligibility}
-                handleEligibilityChange={handleEligibilityChange}
-                plan={plan}
-                setPlan={setPlan}
-                premium={premiums[selectedProduct]}
-                lifeAddInfo={lifeAddInfo}
-                handleLifeAddInfoChange={handleLifeAddInfoChange}
-                errors={errors}
-                costView={costView}
-                individualInfo={individualInfo}
-                handleIndividualInfoChange={handleInputChange}
-                eligibilityOptions={ELIGIBILITY_OPTIONS}
+                  selectedProduct={selectedProduct}
+                  productEligibility={productEligibility}
+                  handleEligibilityChange={handleEligibilityChange}
+                  plan={plan}
+                  setPlan={setPlan}
+                  premium={premiums[selectedProduct]}
+                  lifeAddInfo={lifeAddInfo}
+                  handleLifeAddInfoChange={handleLifeAddInfoChange}
+                  errors={errors}
+                  costView={costView}
+                  individualInfo={individualInfo}
+                  handleIndividualInfoChange={handleInputChange}
+                  PRODUCT_ELIGIBILITY_OPTIONS={PRODUCT_ELIGIBILITY_OPTIONS}
               />
             </div>
           </div>

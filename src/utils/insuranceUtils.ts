@@ -22,7 +22,8 @@ import {
   LTD_CONFIG,
   LIFE_ADD_CONFIG,
   ACCIDENT_PREMIUMS,
-  CRITICAL_ILLNESS_RATES
+  CRITICAL_ILLNESS_RATES,
+  PRODUCT_ELIGIBILITY_OPTIONS
 } from './insuranceConfig';
 
 // Utility functions or constants can be added here
@@ -98,6 +99,12 @@ const PREMIUM_CALCULATIONS: PremiumCalculation = {
     ACCIDENT_PREMIUMS[plan][eligibility],
 
   Dental: (_age, _annualSalary, plan, _lifeAddInfo, eligibility, zipCode, _state) => {
+    // Check if the eligibility is supported for Dental
+    if (!PRODUCT_ELIGIBILITY_OPTIONS.Dental.includes(eligibility)) {
+      console.warn(`Unsupported eligibility option for Dental: ${eligibility}`);
+      return 0;
+    }
+
     const getZipCodeRegion = (zipCode: string): number => {
       for (const [region, prefixes] of Object.entries(ZIP_CODE_REGIONS)) {
         if (prefixes.some(prefix => zipCode.startsWith(prefix))) {
@@ -106,21 +113,20 @@ const PREMIUM_CALCULATIONS: PremiumCalculation = {
       }
       return 1; // Default to region 1 if no match is found
     };
-      const region = getZipCodeRegion(zipCode);
-  
-  // Ensure the plan, region, and eligibility exist in DENTAL_PREMIUMS
-  if (
-    DENTAL_PREMIUMS[plan] &&
-    DENTAL_PREMIUMS[plan][region] &&
-    DENTAL_PREMIUMS[plan][region][eligibility]
-  ) {
-    return DENTAL_PREMIUMS[plan][region][eligibility];
-  } else {
-    console.warn(`No premium found for Dental: plan=${plan}, region=${region}, eligibility=${eligibility}`);
-    return 0; // Return 0 or some default value if the specific combination is not found
-  }
-},
-  
+
+    const region = getZipCodeRegion(zipCode);
+    
+    if (
+      DENTAL_PREMIUMS[plan] &&
+      DENTAL_PREMIUMS[plan][region] &&
+      DENTAL_PREMIUMS[plan][region][eligibility]
+    ) {
+      return DENTAL_PREMIUMS[plan][region][eligibility];
+    } else {
+      console.warn(`No premium found for Dental: plan=${plan}, region=${region}, eligibility=${eligibility}`);
+      return 0;
+    }
+  },
 
   Vision: (_age, _annualSalary, plan, _lifeAddInfo, eligibility, _zipCode, state) => {
     const stateCategory = getStateCategory(state);
@@ -131,15 +137,7 @@ const PREMIUM_CALCULATIONS: PremiumCalculation = {
     return getCriticalIllnessRate(age, eligibility);
   }
 };
-export const PRODUCT_ELIGIBILITY_OPTIONS: Record<string, string[]> = {
-  LTD: ['Individual'],
-  STD: ['Individual'],
-  'Life / AD&D': ['Individual', 'Individual + Spouse', 'Individual + Children', 'Family'],
-  Accidents: ['Individual', 'Individual + Spouse', 'Individual + Children', 'Family'],
-  Dental: ['Individual', 'Individual + Spouse', 'Individual + Children', 'Family'],
-  Vision: ['Individual', 'Individual + Spouse', 'Individual + Children', 'Family'],
-  'Critical Illness/Cancer': ['Individual', 'Individual + Spouse', 'Individual + Children', 'Family'],
-};
+
 export const calculatePremiums = (
   individualInfo: IndividualInfo,
   plan: Plan,
@@ -188,5 +186,6 @@ export {
   STD_CONFIG,
   LTD_CONFIG,
   LIFE_ADD_CONFIG,
-  ACCIDENT_PREMIUMS
+  ACCIDENT_PREMIUMS,
+  PRODUCT_ELIGIBILITY_OPTIONS
 };

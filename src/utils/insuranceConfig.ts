@@ -14,7 +14,15 @@ export const US_STATES: USState[] = [
   'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
 ];
 
-
+export const PRODUCT_ELIGIBILITY_OPTIONS: Record<Product, EligibilityOption[]> = {
+  LTD: ['Individual'],
+  STD: ['Individual'],
+  'Life / AD&D': ['Individual', 'Individual + Spouse', 'Individual + Children', 'Family'],
+  Accidents: ['Individual', 'Individual + Spouse', 'Individual + Children', 'Family'],
+  Dental: ['Individual', 'Individual + Spouse', 'Individual + Children', 'Family'],
+  Vision: ['Individual', 'Individual + Spouse', 'Individual + Children', 'Family'],
+  'Critical Illness/Cancer': ['Individual', 'Individual + Spouse', 'Individual + Children', 'Family'],
+};
 
 export const AGE_BANDED_RATES = [
   { minAge: 0, maxAge: 29, rate: 0.25 },
