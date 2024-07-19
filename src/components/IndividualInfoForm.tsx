@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardHeader, CardContent } from './ui/card';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -17,7 +17,35 @@ interface IndividualInfoFormProps {
   handleIndividualInfoChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
 }
 
+const formatCurrency = (value: string) => {
+  const numberValue = parseFloat(value.replace(/[^0-9]/g, ''));
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(isNaN(numberValue) ? 0 : numberValue);
+};
+
 const IndividualInfoForm: React.FC<IndividualInfoFormProps> = ({ individualInfo, handleIndividualInfoChange }) => {
+  const [annualSalary, setAnnualSalary] = useState(formatCurrency(individualInfo.annualSalary.toString()));
+
+  const handleSalaryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setAnnualSalary(value);
+  };
+
+  const handleSalaryBlur = () => {
+    const formattedSalary = formatCurrency(annualSalary);
+    setAnnualSalary(formattedSalary);
+    handleIndividualInfoChange({
+      target: {
+        name: 'annualSalary',
+        value: formattedSalary.replace(/[^0-9]/g, ''),
+      },
+    } as React.ChangeEvent<HTMLInputElement>);
+  };
+
   return (
     <Card className="mb-4 max-w-xl mx-auto">
       <CardHeader className="text-xl font-bold">Individual Information</CardHeader>
@@ -53,9 +81,10 @@ const IndividualInfoForm: React.FC<IndividualInfoFormProps> = ({ individualInfo,
             <Input
               id="annualSalary"
               name="annualSalary"
-              type="number"
-              value={individualInfo.annualSalary}
-              onChange={handleIndividualInfoChange}
+              type="text"
+              value={annualSalary}
+              onChange={handleSalaryChange}
+              onBlur={handleSalaryBlur}
               placeholder="Annual Salary"
               className="w-full"
               maxLength={10}

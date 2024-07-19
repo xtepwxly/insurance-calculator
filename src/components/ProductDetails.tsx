@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
+import '../styles/Dropdown.css';
 import '../styles/global.css';
 import { Card, CardHeader, CardContent } from './ui/card';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from './ui/select';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
 import { Input } from './ui/input';
@@ -25,6 +25,16 @@ interface ProductDetailsProps {
   PRODUCT_ELIGIBILITY_OPTIONS: Record<Product, EligibilityOption[]>;
 }
 
+const formatCurrency = (value: string) => {
+  const numberValue = parseFloat(value.replace(/[^0-9]/g, ''));
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(isNaN(numberValue) ? 0 : numberValue);
+};
+
 const ProductDetails: React.FC<ProductDetailsProps> = ({
   selectedProduct,
   productEligibility,
@@ -41,14 +51,55 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
   PRODUCT_ELIGIBILITY_OPTIONS
 }) => {
   const bulletPoints = PRODUCT_BULLET_POINTS[selectedProduct][plan];
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [employeeElectedCoverage, setEmployeeElectedCoverage] = useState(formatCurrency(lifeAddInfo.employeeElectedCoverage.toString()));
+  const [spouseElectedCoverage, setSpouseElectedCoverage] = useState(formatCurrency(lifeAddInfo.spouseElectedCoverage.toString()));
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const handleOptionClick = (option: EligibilityOption) => {
+    handleEligibilityChange(option);
+    setIsDropdownOpen(false);
+  };
+
+  const handleEmployeeCoverageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setEmployeeElectedCoverage(value);
+  };
+
+  const handleEmployeeCoverageBlur = () => {
+    const formattedCoverage = formatCurrency(employeeElectedCoverage);
+    setEmployeeElectedCoverage(formattedCoverage);
+    handleLifeAddInfoChange({
+      target: {
+        name: 'employeeElectedCoverage',
+        value: formattedCoverage.replace(/[^0-9]/g, ''),
+      },
+    } as React.ChangeEvent<HTMLInputElement>);
+  };
+
+  const handleSpouseCoverageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setSpouseElectedCoverage(value);
+  };
+
+  const handleSpouseCoverageBlur = () => {
+    const formattedCoverage = formatCurrency(spouseElectedCoverage);
+    setSpouseElectedCoverage(formattedCoverage);
+    handleLifeAddInfoChange({
+      target: {
+        name: 'spouseElectedCoverage',
+        value: formattedCoverage.replace(/[^0-9]/g, ''),
+      },
+    } as React.ChangeEvent<HTMLInputElement>);
+  };
 
   const renderIndividualInfoFields = () => {
     switch (selectedProduct) {
       case 'STD':
-        return (
-          <>
-          </>
-        );
+        return <></>;
       default:
         return null;
     }
@@ -57,20 +108,6 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
   const renderProductBoxFields = () => {
     return (
       <>
-        <Select
-  value={productEligibility[selectedProduct]}
-  onValueChange={(value: string) => handleEligibilityChange(value as EligibilityOption)}
->
-  <SelectTrigger className="w-full sm:w-[180px]">
-    <SelectValue placeholder="Select eligibility" />
-  </SelectTrigger>
-  <SelectContent>
-  {PRODUCT_ELIGIBILITY_OPTIONS[selectedProduct].map((option) => (
-    <SelectItem key={option} value={option}>{option}</SelectItem>
-  ))}
-</SelectContent>
-</Select>
-  
         {['LTD', 'Accidents', 'Dental', 'Vision'].includes(selectedProduct) && (
           <RadioGroup
             value={plan}
@@ -81,17 +118,18 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
             <RadioGroupItem value="Premium">Premium</RadioGroupItem>
           </RadioGroup>
         )}
-  
-        {selectedProduct === 'Life / AD&D' && (  
+
+        {selectedProduct === 'Life / AD&D' && (
           <>
             <div>
               <Label htmlFor="employeeElectedCoverage">Employee Elected Coverage</Label>
               <Input
                 id="employeeElectedCoverage"
                 name="employeeElectedCoverage"
-                type="number"
-                value={lifeAddInfo.employeeElectedCoverage}
-                onChange={handleLifeAddInfoChange}
+                type="text"
+                value={employeeElectedCoverage}
+                onChange={handleEmployeeCoverageChange}
+                onBlur={handleEmployeeCoverageBlur}
               />
               {errors.employeeElectedCoverage && (
                 <Alert variant="destructive">
@@ -101,38 +139,58 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
             </div>
             {(productEligibility[selectedProduct] === 'Individual + Spouse' ||
               productEligibility[selectedProduct] === 'Family') && (
-                <div>
-                  <Label htmlFor="spouseElectedCoverage">Spouse Elected Coverage</Label>
-                  <Input
-                    id="spouseElectedCoverage"
-                    name="spouseElectedCoverage"
-                    type="number"
-                    value={lifeAddInfo.spouseElectedCoverage}
-                    onChange={handleLifeAddInfoChange}
-                  />
-                  {errors.spouseElectedCoverage && (
-                    <Alert variant="destructive">
-                      <AlertDescription>{errors.spouseElectedCoverage}</AlertDescription>
-                    </Alert>
-                  )}
-                </div>
-              )}
+              <div>
+                <Label htmlFor="spouseElectedCoverage">Spouse Elected Coverage</Label>
+                <Input
+                  id="spouseElectedCoverage"
+                  name="spouseElectedCoverage"
+                  type="text"
+                  value={spouseElectedCoverage}
+                  onChange={handleSpouseCoverageChange}
+                  onBlur={handleSpouseCoverageBlur}
+                />
+                {errors.spouseElectedCoverage && (
+                  <Alert variant="destructive">
+                    <AlertDescription>{errors.spouseElectedCoverage}</AlertDescription>
+                  </Alert>
+                )}
+              </div>
+            )}
             {(productEligibility[selectedProduct] === 'Individual + Children' ||
               productEligibility[selectedProduct] === 'Family') && (
-                <div>
-                  <Label htmlFor="numberOfChildren">Number of Children</Label>
-                  <Input
-                    id="numberOfChildren"
-                    name="numberOfChildren"
-                    type="number"
-                    value={lifeAddInfo.numberOfChildren}
-                    onChange={handleLifeAddInfoChange}
-                  />
-                </div>
-              )}
+              <div>
+                <Label htmlFor="numberOfChildren">Number of Children</Label>
+                <Input
+                  id="numberOfChildren"
+                  name="numberOfChildren"
+                  type="number"
+                  value={lifeAddInfo.numberOfChildren}
+                  onChange={handleLifeAddInfoChange}
+                />
+              </div>
+            )}
           </>
         )}
       </>
+    );
+  };
+
+  const renderEligibilityField = () => {
+    const dropdownClass = selectedProduct === 'Life / AD&D' ? 'dropdown dropdown-wide' : 'dropdown';
+    return (
+      <div className={dropdownClass} style={{ minWidth: '200px' }}>
+        <button className="dropdown-btn" onClick={toggleDropdown}>
+          <span>{productEligibility[selectedProduct] || "Select eligibility"}</span>
+          <span className={`arrow ${isDropdownOpen ? 'arrow-rotate' : ''}`}></span>
+        </button>
+        <ul className={`dropdown-content ${isDropdownOpen ? 'menu-open' : ''}`}>
+          {PRODUCT_ELIGIBILITY_OPTIONS[selectedProduct].map((option) => (
+            <li key={option} onClick={() => handleOptionClick(option)}>
+              <a href="#">{option}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
     );
   };
 
@@ -147,8 +205,9 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
     <Card className='border-solid border-2'>
       <CardHeader className="sticky top-0 bg-white z-10 flex justify-between items-center">
         <h3 className="text-lg font-semibold">{selectedProduct}</h3>
-        <div className="flex space-x-4">
+        <div className="flex space-x-4 items-center">
           {renderProductBoxFields()}
+          {renderEligibilityField()}
         </div>
       </CardHeader>
       <CardContent className="space-y-4 relative">

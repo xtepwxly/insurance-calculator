@@ -84,14 +84,14 @@
 }
 
 .product-tabs .product-tab-link {
-  color: #444;
+  color: #000000;
   text-decoration: none;
   display: block;
   padding: 0.5em;
 }
 
 .product-tabs .product-tab-item.active {
-  background-color: #e6e6e6;
+  background-color: #828bff;
 }
 
 .product-details {

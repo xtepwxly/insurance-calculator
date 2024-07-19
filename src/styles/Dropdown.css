@@ -1,0 +1,77 @@
+/* Dropdown.css */
+.dropdown {
+  max-width: 13em;
+  margin: 0 auto;
+  position: relative;
+  width: 100%;
+}
+
+.dropdown-btn {
+  background: #3B82F6;
+  font-size: 14px;
+  width: 100%;
+  border: none;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.7em 0.5em;
+  border-radius: 0.5em;
+  cursor: pointer;
+}
+
+.arrow {
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid #fff;
+  transition: transform ease-in-out 0.3s;
+}
+
+.dropdown-content {
+  list-style: none;
+  position: absolute;
+  top: 3.2em;
+  width: 100%;
+  visibility: hidden;
+  overflow: hidden;
+  background: #a5bcea;
+  border-radius: 0.5em;
+}
+
+.dropdown-content.menu-open {
+  visibility: visible;
+}
+
+.dropdown-content li {
+  background: #8ca9e3;
+  border-radius: 0.5em;
+  transition: 0.5s;
+  cursor: pointer;
+}
+
+.dropdown-content li a {
+  display: block;
+  padding: 0.7em 0.5em;
+  color: #fff;
+  text-decoration: none;
+}
+
+.dropdown-content li:hover {
+  background: #1d1f24;
+}
+
+.arrow.arrow-rotate {
+  transform: rotate(180deg);
+}
+
+/* base styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Segoe UI", sans-serif;
+  color: #333;
+}
