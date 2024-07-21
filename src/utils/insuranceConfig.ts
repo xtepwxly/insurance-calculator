@@ -55,7 +55,8 @@ export const LTD_CONFIG = {
 };
 
 export const STD_CONFIG = {
-  maxWeeklyBenefit: 1200,
+  maxCoveredWeeklyIncome: 2000, // Add this line
+  maxWeeklyBenefit: 1100,       // Change this from 1200 to 1100
   benefitPercentage: 0.6,
   maxUnits: 110
 };

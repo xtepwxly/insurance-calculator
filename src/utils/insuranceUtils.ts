@@ -88,10 +88,11 @@ const getCriticalIllnessRate = (age: number, eligibility: EligibilityOption): nu
 
 const PREMIUM_CALCULATIONS: PremiumCalculation = {
   STD: (age, annualSalary, _plan, _lifeAddInfo, _eligibility, _zipCode, _state) => {
-    const grossWeeklyIncome = annualSalary / 52;
+    const grossWeeklyIncome = Math.min(annualSalary / 52, STD_CONFIG.maxCoveredWeeklyIncome);
     const grossWeeklyBenefitAmount = Math.min(grossWeeklyIncome * STD_CONFIG.benefitPercentage, STD_CONFIG.maxWeeklyBenefit);
     const units = Math.min(grossWeeklyBenefitAmount / 10, STD_CONFIG.maxUnits);
-    return units * getAgeBandedRate(age);
+    const ageBandedRate = AGE_BANDED_RATES.find(band => age >= band.minAge && age <= band.maxAge)?.rate || 0.66;
+    return units * ageBandedRate;
   },
 
   LTD: (_age, annualSalary, plan, _lifeAddInfo, _eligibility, _zipCode, _state) => {
