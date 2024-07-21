@@ -176,9 +176,9 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
   };
 
   const renderEligibilityField = () => {
-    const dropdownClass = selectedProduct === 'Life / AD&D' ? 'dropdown dropdown-wide' : 'dropdown';
+    const dropdownClass = (selectedProduct === 'Life / AD&D' ? 'dropdown dropdown-wide' : 'dropdown') + ' md:min-w-52';
     return (
-      <div className={dropdownClass} style={{ minWidth: '200px' }}>
+      <div className={dropdownClass}>
         <button className="dropdown-btn" onClick={toggleDropdown}>
           <span>{productEligibility[selectedProduct] || "Select eligibility"}</span>
           <span className={`arrow ${isDropdownOpen ? 'arrow-rotate' : ''}`}></span>
@@ -204,7 +204,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
   return (
     <Card className='border-solid border-2'>
       <CardHeader className="sticky top-0 bg-white z-10 flex justify-between items-center">
-        <h3 className="text-lg font-semibold">{selectedProduct}</h3>
+        <h3 className="md:text-lg font-semibold">{selectedProduct}</h3>
         <div className="flex space-x-4 items-center">
           {renderProductBoxFields()}
           {renderEligibilityField()}
@@ -218,7 +218,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
         </ul>
         {renderIndividualInfoFields()}
         <div className="bottom-0 right-0 p-4">
-          <p className="text-lg font-semibold">{costView} Premium: {formattedPremium}</p>
+          <p className="md:text-lg font-semibold">{costView} Premium: {formattedPremium}</p>
         </div>
       </CardContent>
     </Card>

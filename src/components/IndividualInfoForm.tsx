@@ -47,11 +47,11 @@ const IndividualInfoForm: React.FC<IndividualInfoFormProps> = ({ individualInfo,
   };
 
   return (
-    <Card className="mb-4 max-w-xl mx-auto">
+    <Card className="mb-4">
       <CardHeader className="text-xl font-bold">Individual Information</CardHeader>
       <CardContent>
-        <div className="flex space-x-4">
-          <div className="space-y-2 w-16">
+        <div className="flex flex-col md:flex-row md:justify-between">
+          <div className="space-y-2 md:w-40">
             <Label htmlFor="age">Age</Label>
             <Input
               id="age"
@@ -64,7 +64,7 @@ const IndividualInfoForm: React.FC<IndividualInfoFormProps> = ({ individualInfo,
               maxLength={2}
             />
           </div>
-          <div className="space-y-2 w-24">
+          <div className="space-y-2 md:w-40">
             <Label htmlFor="zipCode">Zip Code</Label>
             <Input
               id="zipCode"
@@ -76,7 +76,7 @@ const IndividualInfoForm: React.FC<IndividualInfoFormProps> = ({ individualInfo,
               maxLength={5}
             />
           </div>
-          <div className="space-y-2 w-40">
+          <div className="space-y-2 md:w-40">
             <Label htmlFor="annualSalary">Annual Salary</Label>
             <Input
               id="annualSalary"
@@ -90,13 +90,13 @@ const IndividualInfoForm: React.FC<IndividualInfoFormProps> = ({ individualInfo,
               maxLength={10}
             />
           </div>
-          <div className="space-y-2 flex-1">
+          <div className="space-y-2 md:w-40">
             <Label htmlFor="state">State</Label>
             <Select
               id="state"
               value={individualInfo.state}
               onValueChange={(value) => handleIndividualInfoChange({ target: { name: 'state', value } } as React.ChangeEvent<HTMLSelectElement>)}
-              className="w-full bg-white border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-opacity-50 focus:ring-blue-500"
+              className="w-full bg-white border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-opacity-50 focus:ring-blue-500 py-2 px-3"
             >
               <SelectTrigger className="w-full">
                 <SelectValue />

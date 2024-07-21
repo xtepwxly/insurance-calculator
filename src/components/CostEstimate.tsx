@@ -19,7 +19,7 @@ const CostEstimate: React.FC<CostEstimateProps> = ({ totalPremium, costView, set
   return (
     <Card className="mb-4 w-full sticky top-4">
       <CardHeader className="flex justify-between items-center">
-        <h2 className="text-lg font-semibold">Total Premium Per Employee</h2>
+        <h2 className="md:text-lg font-semibold">Total Premium Per Employee</h2>
         <Toggle
           pressed={costView === 'Month'}
           onPressedChange={() => setCostView(prev => prev === 'Month' ? 'Bi-weekly' : 'Month')}
