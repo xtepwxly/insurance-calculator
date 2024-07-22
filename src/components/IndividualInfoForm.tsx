@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { Card, CardHeader, CardContent } from './ui/card';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from './ui/select';
-import { US_STATES } from '../utils/insuranceUtils';
 
 interface IndividualInfo {
   age: number;
@@ -88,30 +86,12 @@ const IndividualInfoForm: React.FC<IndividualInfoFormProps> = ({ individualInfo,
               placeholder="Annual Salary"
               className="w-full"
               maxLength={10}
-            />
-          </div>
-          <div className="space-y-2 md:w-40">
-            <Label htmlFor="state">State</Label>
-            <Select
-              id="state"
-              value={individualInfo.state}
-              onValueChange={(value) => handleIndividualInfoChange({ target: { name: 'state', value } } as React.ChangeEvent<HTMLSelectElement>)}
-              className="w-full bg-white border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-opacity-50 focus:ring-blue-500 py-2 px-3"
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {US_STATES.map((state) => (
-                  <SelectItem key={state} value={state}>{state}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
-
-export default IndividualInfoForm;
+              />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      );
+    };
+    
+    export default IndividualInfoForm;

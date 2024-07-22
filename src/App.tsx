@@ -2,26 +2,28 @@ import React, { useState, useCallback, useEffect } from 'react';
 import './styles/global.css';
 import './styles/ProductTabs.css';
 import './styles/App.css';
-import { Product, EligibilityOption, IndividualInfo, LifeAddInfo, Plan, PremiumResult } from './utils/insuranceTypes';
+import { Product, EligibilityOption, IndividualInfo, LifeAddInfo, Plan, PremiumResult, USState } from './utils/insuranceTypes';
 import { calculatePremiums, PRODUCTS, ELIGIBILITY_OPTIONS, PRODUCT_ELIGIBILITY_OPTIONS } from './utils/insuranceUtils';
 import CostEstimate from './components/CostEstimate';
 import ProductSelector from './components/ProductSelector';
 import ProductDetails from './components/ProductDetails';
 import IndividualInfoForm from './components/IndividualInfoForm';
 import ActiveProductsToggle from './components/ActiveProductsToggle';
+import { findStateByZipCode } from './utils/loadStateFromZip';
+
 
 
 const initialIndividualInfo: IndividualInfo = {
   age: 45,
   annualSalary: 400000,
   zipCode: '07030',
-  state: 'NJ'
+  state: 'NJ' as USState
 };
 
 const initialLifeAddInfo: LifeAddInfo = {
   employeeElectedCoverage: 150000,
   spouseElectedCoverage: 20000,
-  numberOfChildren: 2
+  numberOfChildren: 2,
 };
 
 const initialProducts: Record<Product, boolean> = {
@@ -43,7 +45,14 @@ function App() {
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setIndividualInfo(prev => ({ ...prev, [name]: value }));
+    setIndividualInfo((prev) => {
+      const updatedInfo = { ...prev, [name]: value };
+      if (name === 'zipCode' && value.length === 5) {
+        const state = findStateByZipCode(value) as USState | null;
+        return { ...updatedInfo, state: state ?? prev.state };
+      }
+      return updatedInfo;
+    });
   }, []);
 
   const handleProductToggle = useCallback((product: Product) => {
