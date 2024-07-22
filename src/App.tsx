@@ -96,7 +96,7 @@ function App() {
   return (
     <div className="min-h-screen flex flex-col">
       <div className="top-0 left-0 p-4">
-        <h1 className="text-center text-2xl font-bold">JOHN</h1>
+        <h1 className="text-center text-2xl font-bold">Ask Paul</h1>
       </div>
       <div className="container mx-auto p-4 flex flex-grow overflow-y-auto md:pr-10">
         <div className="main-container flex w-full md:gap-24">
