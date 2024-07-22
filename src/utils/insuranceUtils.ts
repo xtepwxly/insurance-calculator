@@ -9,7 +9,8 @@ import {
   IndividualInfo,
   PRODUCTS,
   ELIGIBILITY_OPTIONS,
-  US_STATES
+  US_STATES,
+  CostView
 } from './insuranceTypes';
 
 import {
@@ -31,6 +32,16 @@ import {
 const getAgeBandedRate = (age: number): number => {
   const ageBand = AGE_BANDED_RATES_LIFE.find(band => age >= band.minAge && age <= band.maxAge);
   return ageBand ? ageBand.rate : 0;
+};
+
+export const getCostViewDivisor = (costView: CostView): number => {
+  switch (costView) {
+    case 'Monthly': return 12;
+    case 'Semi-Monthly': return 24;
+    case 'Bi-Weekly': return 26;
+    case 'Weekly': return 52;
+    default: return 12; // Default to Monthly
+  }
 };
 
 export const calculateLifeADDPremium = (coverageAmount: number, age: number, spouseCoverageAmount: number, numberOfChildren: number): number => {
@@ -149,14 +160,15 @@ const PREMIUM_CALCULATIONS: PremiumCalculation = {
     }
   };
 
-export const calculatePremiums = (
-  individualInfo: IndividualInfo,
-  plan: Plan,
-  lifeAddInfo: LifeAddInfo,
-  productEligibility: Record<Product, EligibilityOption>,
-  selectedProduct: Product
-): Record<Product, number> => {
-  const { age, annualSalary, zipCode, state } = individualInfo;
+  export const calculatePremiums = (
+    individualInfo: IndividualInfo,
+    plan: Plan,
+    lifeAddInfo: LifeAddInfo,
+    productEligibility: Record<Product, EligibilityOption>,
+    selectedProduct: Product,
+    costView: CostView
+  ): Record<Product, number> => {
+    const { age, annualSalary, zipCode, state } = individualInfo;
   const calculatePremium = PREMIUM_CALCULATIONS[selectedProduct];
 
   if (!calculatePremium) return { [selectedProduct]: 0 } as Record<Product, number>;
@@ -170,8 +182,10 @@ export const calculatePremiums = (
     zipCode,
     state
   );
+  const divisor = getCostViewDivisor(costView);
+  const adjustedPremium = (premium * 12) / divisor; // Convert to selected cost view
 
-  return { [selectedProduct]: premium } as Record<Product, number>;
+  return { [selectedProduct]: adjustedPremium } as Record<Product, number>;
 };
 
 // Use `export type` for re-exporting types

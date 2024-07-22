@@ -26,6 +26,7 @@ export interface IndividualInfo {
   state: USState;
 }
 
+export type CostView = 'Monthly' | 'Semi-Monthly' | 'Bi-Weekly' | 'Weekly';
 
 export interface PremiumResult {
   [key: string]: number;

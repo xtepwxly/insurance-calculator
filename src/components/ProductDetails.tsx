@@ -6,8 +6,9 @@ import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
 import { Input } from './ui/input';
 import { Alert, AlertDescription } from './ui/alert';
-import { Product, EligibilityOption, Plan, LifeAddInfo, IndividualInfo } from '../utils/insuranceTypes';
+import { Product, EligibilityOption, Plan, LifeAddInfo, IndividualInfo, CostView } from '../utils/insuranceTypes';
 import { PRODUCT_BULLET_POINTS, PRODUCT_ELIGIBILITY_OPTIONS } from '../utils/insuranceConfig';
+
 
 interface ProductDetailsProps {
   selectedProduct: Product;
@@ -19,7 +20,7 @@ interface ProductDetailsProps {
   lifeAddInfo: LifeAddInfo;
   handleLifeAddInfoChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   errors: Record<string, string>;
-  costView: 'Month' | 'Bi-weekly';
+  costView: CostView;
   individualInfo: IndividualInfo;
   handleIndividualInfoChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   PRODUCT_ELIGIBILITY_OPTIONS: Record<Product, EligibilityOption[]>;
@@ -199,7 +200,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
     currency: 'USD',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
-  }).format(costView === 'Month' ? premium : premium / 2);
+  }).format(costView === 'Month' as CostView ? premium : premium / 2);
 
   return (
     <Card className='border-solid border-2'>

@@ -1,14 +1,15 @@
 import React, { ReactElement, ReactNode } from 'react';
+import { CostView } from 'utils/insuranceTypes';
 
 interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
-  onValueChange?: (value: string) => void;
+  onValueChange?: (value: CostView) => void;
 }
 
 export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   ({ children, onValueChange, ...props }, ref) => (
     <select
       ref={ref}
-      onChange={(e) => onValueChange && onValueChange(e.target.value)}
+      onChange={(e) => onValueChange && onValueChange(e.target.value as CostView)}
       {...props}
     >
       {children}

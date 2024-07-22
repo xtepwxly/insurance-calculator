@@ -1,13 +1,13 @@
 import React from 'react';
 import { Card, CardHeader, CardContent } from './ui/card';
 import { Toggle } from './ui/toggle';
-import { Product, PremiumResult } from '../utils/insuranceTypes';  // Adjust the import path as needed
+import { Product, PremiumResult, CostView } from '../utils/insuranceTypes';  // Adjust the import path as needed
 
 interface ActiveProductsToggleProps {
   products: Record<Product, boolean>;
   handleProductToggle: (product: Product) => void;
   premiums: PremiumResult;
-  costView: 'Month' | 'Bi-weekly';
+  costView: CostView;
 }
 
 const ActiveProductsToggle: React.FC<ActiveProductsToggleProps> = ({ 
@@ -28,7 +28,7 @@ const ActiveProductsToggle: React.FC<ActiveProductsToggleProps> = ({
             currency: 'USD',
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
-          }).format(costView === 'Month' ? premium : premium / 2);
+          }).format(costView === 'Month' as CostView ? premium : premium / 2);
 
           return (
             <div key={product} className="mb-2 flex justify-between items-center">

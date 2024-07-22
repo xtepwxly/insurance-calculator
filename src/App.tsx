@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import './styles/global.css';
 import './styles/ProductTabs.css';
 import './styles/App.css';
-import { Product, EligibilityOption, IndividualInfo, LifeAddInfo, Plan, PremiumResult, USState } from './utils/insuranceTypes';
+import { Product, EligibilityOption, IndividualInfo, LifeAddInfo, Plan, PremiumResult, USState, CostView } from './utils/insuranceTypes';
 import { calculatePremiums, PRODUCTS, ELIGIBILITY_OPTIONS, PRODUCT_ELIGIBILITY_OPTIONS } from './utils/insuranceUtils';
 import CostEstimate from './components/CostEstimate';
 import ProductSelector from './components/ProductSelector';
@@ -10,7 +10,8 @@ import ProductDetails from './components/ProductDetails';
 import IndividualInfoForm from './components/IndividualInfoForm';
 import ActiveProductsToggle from './components/ActiveProductsToggle';
 import { findStateByZipCode } from './utils/loadStateFromZip';
-
+import {CardContent, CardHeader, Card } from 'components/ui/card';
+import {Select, SelectItem, SelectTrigger, SelectValue, SelectContent } from 'components/ui/select';
 
 
 const initialIndividualInfo: IndividualInfo = {
@@ -33,7 +34,7 @@ const initialProducts: Record<Product, boolean> = {
 function App() {
   const [individualInfo, setIndividualInfo] = useState<IndividualInfo>(initialIndividualInfo);
   const [selectedProduct, setSelectedProduct] = useState<Product>('LTD');
-  const [costView, setCostView] = useState<'Month' | 'Bi-weekly'>('Month');
+  const [costView, setCostView] = useState<CostView>('Monthly');
   const [plan, setPlan] = useState<Plan>('Basic');
   const [products, setProducts] = useState<Record<Product, boolean>>(initialProducts);
   const [productEligibility, setProductEligibility] = useState<Record<Product, EligibilityOption>>(
@@ -71,7 +72,7 @@ function App() {
   const calculateAllPremiums = useCallback(() => {
     const allPremiums: PremiumResult = {};
     PRODUCTS.forEach(product => {
-      allPremiums[product] = calculatePremiums(individualInfo, plan, lifeAddInfo, productEligibility, product)[product];
+      allPremiums[product] = calculatePremiums(individualInfo, plan, lifeAddInfo, productEligibility, product, costView)[product];
     });
     return allPremiums;
   }, [individualInfo, plan, lifeAddInfo, productEligibility]);
@@ -142,7 +143,25 @@ function App() {
             </div>
           </div>
           <div className="rightrail w-1/4 space-y-4 overflow-y-auto">
-            <CostEstimate
+          <CardHeader className="md:text-lg font-semibold flex justify-between items-center">
+          Time Period
+          <Select 
+        value={costView} 
+        onValueChange={(value: CostView) => setCostView(value)}
+      >
+                <SelectTrigger className="w-[180px]">
+          <SelectValue>{costView}</SelectValue>
+        </SelectTrigger>
+
+  <SelectContent>
+    <SelectItem value="Monthly">Monthly</SelectItem>
+    <SelectItem value="Semi-Monthly">Semi-Monthly</SelectItem>
+    <SelectItem value="Bi-Weekly">Bi-Weekly</SelectItem>
+    <SelectItem value="Weekly">Weekly</SelectItem>
+  </SelectContent>
+</Select>
+        </CardHeader>
+        <CostEstimate
               totalPremium={calculateTotalPremium()}
               costView={costView}
               setCostView={setCostView}
