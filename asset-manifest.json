@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/insurance-calculator/static/css/main.8ee42e3e.css",
-    "main.js": "/insurance-calculator/static/js/main.73e0245c.js",
+    "main.js": "/insurance-calculator/static/js/main.dfb458ee.js",
     "index.html": "/insurance-calculator/index.html",
     "main.8ee42e3e.css.map": "/insurance-calculator/static/css/main.8ee42e3e.css.map",
-    "main.73e0245c.js.map": "/insurance-calculator/static/js/main.73e0245c.js.map"
+    "main.dfb458ee.js.map": "/insurance-calculator/static/js/main.dfb458ee.js.map"
   },
   "entrypoints": [
     "static/css/main.8ee42e3e.css",
-    "static/js/main.73e0245c.js"
+    "static/js/main.dfb458ee.js"
   ]
 }
