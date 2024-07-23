@@ -156,7 +156,6 @@ function App() {
   <SelectContent>
     <SelectItem value="Monthly">Monthly</SelectItem>
     <SelectItem value="Semi-Monthly">Semi-Monthly</SelectItem>
-    <SelectItem value="Bi-Weekly">Bi-Weekly</SelectItem>
     <SelectItem value="Weekly">Weekly</SelectItem>
   </SelectContent>
 </Select>

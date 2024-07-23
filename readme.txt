@@ -6,7 +6,6 @@ This project is a React-based insurance calculator that allows users to estimate
 
 - Calculate premiums for multiple insurance products (LTD, STD, Life / AD&D, Accidents, Dental, Vision, Critical Illness/Cancer)
 - Input individual information (age, salary, zip code, state)
-- Toggle between monthly and bi-weekly cost views
 - Responsive design for mobile and desktop use
 
 ## Project Structure

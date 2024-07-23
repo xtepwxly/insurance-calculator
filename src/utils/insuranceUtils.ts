@@ -38,7 +38,6 @@ export const getCostViewDivisor = (costView: CostView): number => {
   switch (costView) {
     case 'Monthly': return 12;
     case 'Semi-Monthly': return 24;
-    case 'Bi-Weekly': return 26;
     case 'Weekly': return 52;
     default: return 12; // Default to Monthly
   }
@@ -110,6 +109,9 @@ const PREMIUM_CALCULATIONS: PremiumCalculation = {
     const grossMonthlyIncome = annualSalary / 12;
     const { maxBenefit, costPerHundred } = LTD_CONFIG[plan];
     const units = Math.min(grossMonthlyIncome / 100, maxBenefit / 100);
+    console.log("gross monthly", grossMonthlyIncome)
+    console.log("units", units)
+    console.log("total", units * costPerHundred)
     return units * costPerHundred;
   },
 
