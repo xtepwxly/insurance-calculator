@@ -72,11 +72,16 @@ export const calculateLifeADDPremium = (coverageAmount: number, age: number, spo
   return individualPremium + spousePremium + childrenPremium;
 };
 
-const getZipCodeRegion = (zipCode: string): number => {
-  const region = Object.entries(ZIP_CODE_REGIONS).find(([_, zips]) =>
-    zips.some(zipPrefix => zipCode.startsWith(zipPrefix))
-  );
-  return region ? parseInt(region[0]) : 1; // Default to region 1 if not found
+const getZipCodeRegion = (zipCode: string): number  | null => {
+  const zipPrefix = zipCode.substring(0, 3); // Get the first 3 digits of the zip code
+  console.log("zipcode prefix:", zipPrefix)
+  for (const region in ZIP_CODE_REGIONS) {
+    if (ZIP_CODE_REGIONS[region].includes(zipPrefix)) {
+      return parseInt(region, 10); // Convert the region to a number before returning
+    }
+  }
+  
+  return null; // Return null if no matching region is found
 };
 
 const getStateCategory = (state: USState): string => {
@@ -154,7 +159,12 @@ const PREMIUM_CALCULATIONS: PremiumCalculation = {
       return 0;
     }
     const region = getZipCodeRegion(zipCode);
-    console.log(`Determined region: ${region} for zipCode: ${zipCode}`);
+  if (region === null) {
+    console.warn(`No region found for zipCode: ${zipCode}`);
+    return 0;
+  }
+
+  console.log(`Determined region: ${region} for zipCode: ${zipCode}`);
   
     if (
       DENTAL_PREMIUMS[plan] &&
