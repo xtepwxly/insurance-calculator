@@ -8,6 +8,7 @@ import { Input } from './ui/input';
 import { Alert, AlertDescription } from './ui/alert';
 import { Product, EligibilityOption, Plan, LifeAddInfo, IndividualInfo, CostView } from '../utils/insuranceTypes';
 import { PRODUCT_BULLET_POINTS, PRODUCT_ELIGIBILITY_OPTIONS } from '../utils/insuranceConfig';
+import { calculatePremiumByCostView } from '../utils/insuranceUtils';
 
 
 interface ProductDetailsProps {
@@ -200,8 +201,8 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
     currency: 'USD',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
-  }).format(costView === 'Monthly' as CostView ? premium : (costView === 'Semi-Monthly' ? premium / 2 : premium / 4));
-
+  }).format(calculatePremiumByCostView(premium, costView));
+  
   return (
     <Card className='border-solid border-2'>
       <CardHeader className="sticky top-0 bg-white z-10 flex justify-between items-center">

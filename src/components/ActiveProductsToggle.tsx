@@ -1,7 +1,9 @@
 import React from 'react';
 import { Card, CardHeader, CardContent } from './ui/card';
 import { Toggle } from './ui/toggle';
-import { Product, PremiumResult, CostView } from '../utils/insuranceTypes';  // Adjust the import path as needed
+import { Product, PremiumResult, CostView} from '../utils/insuranceTypes';  // Adjust the import path as needed
+import { calculatePremiumByCostView} from '../utils/insuranceUtils';  
+
 
 interface ActiveProductsToggleProps {
   products: Record<Product, boolean>;
@@ -28,8 +30,7 @@ const ActiveProductsToggle: React.FC<ActiveProductsToggleProps> = ({
             currency: 'USD',
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
-        }).format(costView === 'Monthly' as CostView ? premium : (costView === 'Semi-Monthly' ? premium / 2 : premium / 4));
-
+          }).format(calculatePremiumByCostView(premium, costView));
           return (
             <div key={product} className="mb-2 flex justify-between items-center">
               <Toggle

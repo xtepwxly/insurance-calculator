@@ -2,6 +2,8 @@ import React from 'react';
 import { Card, CardHeader, CardContent } from './ui/card';
 import { Toggle } from './ui/toggle';
 import { CostView } from 'utils/insuranceTypes';
+import { calculatePremiumByCostView} from '../utils/insuranceUtils';  
+
 
 interface CostEstimateProps {
   totalPremium: number;
@@ -15,7 +17,8 @@ const CostEstimate: React.FC<CostEstimateProps> = ({ totalPremium, costView, set
     currency: 'USD',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
-  }).format(costView === 'Monthly' as CostView ? totalPremium : (costView === 'Semi-Monthly' ? totalPremium / 2 : totalPremium / 4));
+  }).format(calculatePremiumByCostView(totalPremium, costView));
+
   return (
     <Card className="mb-4 w-full sticky top-4">
       <CardHeader className="flex justify-between items-center">

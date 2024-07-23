@@ -144,7 +144,7 @@ function App() {
           </div>
           <div className="rightrail w-1/4 space-y-4 overflow-y-auto">
           <CardHeader className="md:text-lg font-semibold flex justify-between items-center">
-          Time Period
+          Cost View
           <Select 
         value={costView} 
         onValueChange={(value: CostView) => setCostView(value)}
@@ -157,6 +157,7 @@ function App() {
     <SelectItem value="Monthly">Monthly</SelectItem>
     <SelectItem value="Semi-Monthly">Semi-Monthly</SelectItem>
     <SelectItem value="Weekly">Weekly</SelectItem>
+    <SelectItem value="Annual">Annual</SelectItem>
   </SelectContent>
 </Select>
         </CardHeader>

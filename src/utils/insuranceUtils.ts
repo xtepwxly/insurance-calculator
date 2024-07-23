@@ -33,6 +33,21 @@ const getAgeBandedRate = (age: number): number => {
   const ageBand = AGE_BANDED_RATES_LIFE.find(band => age >= band.minAge && age <= band.maxAge);
   return ageBand ? ageBand.rate : 0;
 };
+export function calculatePremiumByCostView(premium: number, costView: CostView): number {
+  switch (costView) {
+    case 'Monthly':
+      return premium;
+      case 'Weekly':
+        return premium / 4;  
+    case 'Semi-Monthly':
+      return premium / 2;
+    case 'Annual':
+      return premium * 12;
+    default:
+      console.warn(`Unexpected cost view: ${costView}. Returning monthly premium.`);
+      return premium;
+  }
+}
 
 export const getCostViewDivisor = (costView: CostView): number => {
   switch (costView) {
