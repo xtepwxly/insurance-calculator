@@ -186,6 +186,9 @@ const PREMIUM_CALCULATIONS: PremiumCalculation = {
   );
   const divisor = getCostViewDivisor(costView);
   const adjustedPremium = (premium * 12) / divisor; // Convert to selected cost view
+  console.log("Premium", premium)
+  console.log("divisor", divisor)
+  console.log("adjusted premium", {[selectedProduct]: adjustedPremium} )
 
   return { [selectedProduct]: adjustedPremium } as Record<Product, number>;
 };

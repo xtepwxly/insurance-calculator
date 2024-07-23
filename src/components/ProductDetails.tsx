@@ -200,7 +200,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
     currency: 'USD',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
-  }).format(costView === 'Monthly' as CostView ? premium : premium / 2);
+  }).format(costView === 'Monthly' as CostView ? premium : (costView === 'Semi-Monthly' ? premium / 2 : premium / 4));
 
   return (
     <Card className='border-solid border-2'>

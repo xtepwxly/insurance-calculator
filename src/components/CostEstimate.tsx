@@ -15,8 +15,7 @@ const CostEstimate: React.FC<CostEstimateProps> = ({ totalPremium, costView, set
     currency: 'USD',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
-  }).format(costView === 'Monthly' as CostView ? totalPremium : totalPremium / 2);
-
+  }).format(costView === 'Monthly' as CostView ? totalPremium : (costView === 'Semi-Monthly' ? totalPremium / 2 : totalPremium / 4));
   return (
     <Card className="mb-4 w-full sticky top-4">
       <CardHeader className="flex justify-between items-center">

@@ -20,7 +20,7 @@ const ActiveProductsToggle: React.FC<ActiveProductsToggleProps> = ({
     <Card className="test">
       <CardHeader className="test">Active Products</CardHeader>
       <CardContent className="test">
-        <p className="mb-2 text-sm text-gray-500">Monthly premium per employee</p>
+        <p className="mb-2 text-sm text-gray-500">{costView} premium per employee</p>
         {Object.entries(products).map(([product, active]) => {
           const premium = premiums[product] || 0;
           const formattedPremium = new Intl.NumberFormat('en-US', {
@@ -28,7 +28,7 @@ const ActiveProductsToggle: React.FC<ActiveProductsToggleProps> = ({
             currency: 'USD',
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
-          }).format(costView === 'Monthly' as CostView ? premium : premium / 2);
+        }).format(costView === 'Monthly' as CostView ? premium : (costView === 'Semi-Monthly' ? premium / 2 : premium / 4));
 
           return (
             <div key={product} className="mb-2 flex justify-between items-center">
