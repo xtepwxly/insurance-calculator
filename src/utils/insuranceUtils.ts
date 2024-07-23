@@ -148,19 +148,22 @@ const PREMIUM_CALCULATIONS: PremiumCalculation = {
     ACCIDENT_PREMIUMS[plan][eligibility],
 
   Dental: (_age, _annualSalary, plan, _lifeAddInfo, eligibility, zipCode, _state) => {
-    // Check if the eligibility is supported for Dental
+    console.log(`Calculating Dental premium for zipCode: ${zipCode}`);
     if (!PRODUCT_ELIGIBILITY_OPTIONS.Dental.includes(eligibility)) {
       console.warn(`Unsupported eligibility option for Dental: ${eligibility}`);
       return 0;
     }
     const region = getZipCodeRegion(zipCode);
-
+    console.log(`Determined region: ${region} for zipCode: ${zipCode}`);
+  
     if (
       DENTAL_PREMIUMS[plan] &&
       DENTAL_PREMIUMS[plan][region] &&
       DENTAL_PREMIUMS[plan][region][eligibility]
     ) {
-      return DENTAL_PREMIUMS[plan][region][eligibility];
+      const premium = DENTAL_PREMIUMS[plan][region][eligibility];
+      console.log(`Calculated Dental premium: ${premium}`);
+      return premium;
     } else {
       console.warn(`No premium found for Dental: plan=${plan}, region=${region}, eligibility=${eligibility}`);
       return 0;
