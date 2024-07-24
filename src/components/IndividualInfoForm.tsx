@@ -14,7 +14,7 @@ interface IndividualInfo {
   employeeAnnualSalary: number;
 }
 
-interface IndividualInfoFormProps {
+export interface IndividualInfoFormProps {
   individualInfo: IndividualInfo;
   handleIndividualInfoChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -30,113 +30,13 @@ const formatCurrency = (value: string) => {
 };
 
 const IndividualInfoForm: React.FC<IndividualInfoFormProps> = ({ individualInfo, handleIndividualInfoChange }) => {
-  const [ownerSalary, setOwnerSalary] = useState(formatCurrency(individualInfo.ownerAnnualSalary.toString()));
-  const [employeeSalary, setEmployeeSalary] = useState(formatCurrency(individualInfo.employeeAnnualSalary.toString()));
-
-  const handleSalaryChange = (setter: React.Dispatch<React.SetStateAction<string>>) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setter(e.target.value);
-  };
-
-  const handleSalaryBlur = (field: 'ownerAnnualSalary' | 'employeeAnnualSalary', value: string) => {
-    const formattedSalary = formatCurrency(value);
-    if (field === 'ownerAnnualSalary') setOwnerSalary(formattedSalary);
-    else setEmployeeSalary(formattedSalary);
-    handleIndividualInfoChange({
-      target: {
-        name: field,
-        value: formattedSalary.replace(/[^0-9]/g, ''),
-      },
-    } as React.ChangeEvent<HTMLInputElement>);
-  };
-
   return (
-    <>
-    <FormTypeSelector/>
     <Card className="mb-4">
       <CardHeader className="text-xl font-bold">About Your Business</CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="space-y-2">
-            <h3 className="font-semibold">Business</h3>
-            <div>
-              <Label htmlFor="businessZipCode">Zip:</Label>
-              <Input
-                id="businessZipCode"
-                name="businessZipCode"
-                value={individualInfo.businessZipCode}
-                onChange={handleIndividualInfoChange}
-                placeholder="Business Zip Code"
-                maxLength={5}
-              />
-            </div>
-            <div>
-              <Label htmlFor="businessEmployees"># of Employees:</Label>
-              <Input
-                id="businessEmployees"
-                name="businessEmployees"
-                type="number"
-                value={individualInfo.businessEmployees}
-                onChange={handleIndividualInfoChange}
-                placeholder="Number of Employees"
-              />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <h3 className="font-semibold">Owner</h3>
-            <div>
-              <Label htmlFor="ownerAge">Age:</Label>
-              <Input
-                id="ownerAge"
-                name="ownerAge"
-                type="number"
-                value={individualInfo.ownerAge}
-                onChange={handleIndividualInfoChange}
-                placeholder="Owner Age"
-              />
-            </div>
-            <div>
-              <Label htmlFor="ownerAnnualSalary">Annual Salary:</Label>
-              <Input
-                id="ownerAnnualSalary"
-                name="ownerAnnualSalary"
-                type="text"
-                value={ownerSalary}
-                onChange={handleSalaryChange(setOwnerSalary)}
-                onBlur={() => handleSalaryBlur('ownerAnnualSalary', ownerSalary)}
-                placeholder="Owner Annual Salary"
-              />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <h3 className="font-semibold">Employees</h3>
-            <div>
-              <Label htmlFor="employeeAge">Age:</Label>
-              <Input
-                id="employeeAge"
-                name="employeeAge"
-                type="number"
-                value={individualInfo.employeeAge}
-                onChange={handleIndividualInfoChange}
-                placeholder="Employee Age"
-              />
-            </div>
-            <div>
-              <Label htmlFor="employeeAnnualSalary">Annual Salary:</Label>
-              <Input
-                id="employeeAnnualSalary"
-                name="employeeAnnualSalary"
-                type="text"
-                value={employeeSalary}
-                onChange={handleSalaryChange(setEmployeeSalary)}
-                onBlur={() => handleSalaryBlur('employeeAnnualSalary', employeeSalary)}
-                placeholder="Employee Annual Salary"
-              />
-            </div>
-          </div>
-        </div>
+        <FormTypeSelector individualInfo={individualInfo} handleIndividualInfoChange={handleIndividualInfoChange} />
       </CardContent>
     </Card>
-    </>
   );
 };
 
