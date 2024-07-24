@@ -70,7 +70,7 @@ const IndividualInfoForm: React.FC<IndividualInfoFormProps> = ({ individualInfo,
               />
             </div>
             <div>
-              <Label htmlFor="businessEmployees"># of Employees: {individualInfo.businessEmployees}</Label>
+              <Label htmlFor="businessEmployees"># of Employees:</Label>
               <Input
                 id="businessEmployees"
                 name="businessEmployees"
@@ -78,14 +78,13 @@ const IndividualInfoForm: React.FC<IndividualInfoFormProps> = ({ individualInfo,
                 value={individualInfo.businessEmployees}
                 onChange={handleIndividualInfoChange}
                 placeholder="Number of Employees"
-                className="w-full"
               />
             </div>
           </div>
           <div className="space-y-2">
             <h3 className="font-semibold">Owner</h3>
             <div>
-              <Label htmlFor="ownerAge">Age: {individualInfo.ownerAge}</Label>
+              <Label htmlFor="ownerAge">Age:</Label>
               <Input
                 id="ownerAge"
                 name="ownerAge"
@@ -93,11 +92,10 @@ const IndividualInfoForm: React.FC<IndividualInfoFormProps> = ({ individualInfo,
                 value={individualInfo.ownerAge}
                 onChange={handleIndividualInfoChange}
                 placeholder="Owner Age"
-                className="w-full"
               />
             </div>
             <div>
-              <Label htmlFor="ownerAnnualSalary">Annual Salary: {ownerSalary}</Label>
+              <Label htmlFor="ownerAnnualSalary">Annual Salary:</Label>
               <Input
                 id="ownerAnnualSalary"
                 name="ownerAnnualSalary"
@@ -106,14 +104,13 @@ const IndividualInfoForm: React.FC<IndividualInfoFormProps> = ({ individualInfo,
                 onChange={handleSalaryChange(setOwnerSalary)}
                 onBlur={() => handleSalaryBlur('ownerAnnualSalary', ownerSalary)}
                 placeholder="Owner Annual Salary"
-                className="w-full"
               />
             </div>
           </div>
           <div className="space-y-2">
             <h3 className="font-semibold">Employees</h3>
             <div>
-              <Label htmlFor="employeeAge">Age: {individualInfo.employeeAge}</Label>
+              <Label htmlFor="employeeAge">Age:</Label>
               <Input
                 id="employeeAge"
                 name="employeeAge"
@@ -121,11 +118,10 @@ const IndividualInfoForm: React.FC<IndividualInfoFormProps> = ({ individualInfo,
                 value={individualInfo.employeeAge}
                 onChange={handleIndividualInfoChange}
                 placeholder="Employee Age"
-                className="w-full"
               />
             </div>
             <div>
-              <Label htmlFor="employeeAnnualSalary">Annual Salary: {employeeSalary}</Label>
+              <Label htmlFor="employeeAnnualSalary">Annual Salary:</Label>
               <Input
                 id="employeeAnnualSalary"
                 name="employeeAnnualSalary"
@@ -134,7 +130,6 @@ const IndividualInfoForm: React.FC<IndividualInfoFormProps> = ({ individualInfo,
                 onChange={handleSalaryChange(setEmployeeSalary)}
                 onBlur={() => handleSalaryBlur('employeeAnnualSalary', employeeSalary)}
                 placeholder="Employee Annual Salary"
-                className="w-full"
               />
             </div>
           </div>
