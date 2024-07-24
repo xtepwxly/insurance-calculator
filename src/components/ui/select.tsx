@@ -9,6 +9,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps<any>>( // 
   <T,>({ children, onValueChange, ...props } : SelectProps<T>, ref: React.Ref<HTMLSelectElement>) => (
     <select
       ref={ref}
+      className={`rounded-lg p-1 ${Select || ''}`} // Add rounded-xl class here
       onChange={(e) => onValueChange && onValueChange(e.target.value as unknown as T)}
       {...props}
     >
