@@ -20,9 +20,12 @@ export interface LifeAddInfo {
 }
 
 export interface IndividualInfo {
-  age: number;
-  annualSalary: number;
-  zipCode: string;
+  businessZipCode: string;
+  businessEmployees: number;
+  ownerAge: number;
+  ownerAnnualSalary: number;
+  employeeAge: number;
+  employeeAnnualSalary: number;
   state: USState;
 }
 

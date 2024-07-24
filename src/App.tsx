@@ -15,9 +15,12 @@ import {CardContent, CardHeader, Card } from 'components/ui/card';
 import {Select, SelectItem, SelectTrigger, SelectValue, SelectContent } from 'components/ui/select';
 
 const initialIndividualInfo: IndividualInfo = {
-  age: 45,
-  annualSalary: 400000,
-  zipCode: '07030',
+  businessZipCode: '07030',
+  businessEmployees: 3,
+  ownerAge: 45,
+  ownerAnnualSalary: 400000,
+  employeeAge: 35,
+  employeeAnnualSalary: 50000,
   state: 'NJ' as USState
 };
 

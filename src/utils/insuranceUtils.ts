@@ -28,17 +28,57 @@ import {
   AGE_BANDED_RATES_LIFE
 } from './insuranceConfig';
 
-// Utility functions or constants can be added here
+// ... (keep existing utility functions)
+
+type PremiumCalculation = {
+  [K in Product]: (
+    individualInfo: IndividualInfo,
+    plan: Plan,
+    lifeAddInfo: LifeAddInfo,
+    eligibility: EligibilityOption,
+    isOwner: boolean
+  ) => number;
+};
+
 const getAgeBandedRate = (age: number): number => {
   const ageBand = AGE_BANDED_RATES_LIFE.find(band => age >= band.minAge && age <= band.maxAge);
   return ageBand ? ageBand.rate : 0;
 };
+
+const getZipCodeRegion = (zipCode: string): number | null => {
+  const zipPrefix = zipCode.substring(0, 3);
+  for (const region in ZIP_CODE_REGIONS) {
+    if (ZIP_CODE_REGIONS[region].includes(zipPrefix)) {
+      return parseInt(region, 10);
+    }
+  }
+  return null;
+};
+
+const getStateCategory = (state: USState): string => {
+  return Object.keys(STATE_CATEGORIES).find(category => STATE_CATEGORIES[category].includes(state)) || 'Other';
+};
+
+const getCriticalIllnessRate = (age: number, eligibility: EligibilityOption): number => {
+  let ageGroup: keyof typeof CRITICAL_ILLNESS_RATES;
+
+  if (age < 24) ageGroup = '<24';
+  else if (age >= 75) ageGroup = '75+';
+  else {
+    const lowerBound = Math.floor(age / 5) * 5;
+    const upperBound = lowerBound + 4;
+    ageGroup = `${lowerBound}-${upperBound}` as keyof typeof CRITICAL_ILLNESS_RATES;
+  }
+
+  return CRITICAL_ILLNESS_RATES[ageGroup][eligibility];
+};
+
 export function calculatePremiumByCostView(premium: number, costView: CostView): number {
   switch (costView) {
     case 'Monthly':
       return premium;
-      case 'Weekly':
-        return premium / 4;  
+    case 'Weekly':
+      return premium / 4.33;  // Approximately 52 weeks / 12 months
     case 'Semi-Monthly':
       return premium / 2;
     case 'Annual':
@@ -49,75 +89,12 @@ export function calculatePremiumByCostView(premium: number, costView: CostView):
   }
 }
 
-export const getCostViewDivisor = (costView: CostView): number => {
-  switch (costView) {
-    case 'Monthly': return 12;
-    case 'Semi-Monthly': return 24;
-    case 'Weekly': return 52;
-    default: return 12; // Default to Monthly
-  }
-};
-
-export const calculateLifeADDPremium = (coverageAmount: number, age: number, spouseCoverageAmount: number, numberOfChildren: number): number => {
-  const ageBandedRate = getAgeBandedRate(age);
-
-  const individualUnits = Math.min(coverageAmount / 1000, 150);
-  const individualPremium = individualUnits * ageBandedRate;
-
-  const spouseUnits = Math.min(spouseCoverageAmount / 1000, 20);
-  const spousePremium = spouseUnits * ageBandedRate;
-
-  const childrenPremium = numberOfChildren > 0 ? 2.5 : 0;
-
-  return individualPremium + spousePremium + childrenPremium;
-};
-
-const getZipCodeRegion = (zipCode: string): number  | null => {
-  const zipPrefix = zipCode.substring(0, 3); // Get the first 3 digits of the zip code
-  console.log("zipcode prefix:", zipPrefix)
-  for (const region in ZIP_CODE_REGIONS) {
-    if (ZIP_CODE_REGIONS[region].includes(zipPrefix)) {
-      return parseInt(region, 10); // Convert the region to a number before returning
-    }
-  }
-  
-  return null; // Return null if no matching region is found
-};
-
-const getStateCategory = (state: USState): string => {
-  return Object.keys(STATE_CATEGORIES).find(category => STATE_CATEGORIES[category].includes(state)) || 'Other';
-};
-
-type PremiumCalculation = {
-  [K in Product]: (
-    age: number,
-    annualSalary: number,
-    plan: Plan,
-    lifeAddInfo: LifeAddInfo,
-    eligibility: EligibilityOption,
-    zipCode: string,
-    state: USState
-  ) => number;
-};
-
-type CriticalIllnessAgeGroup = keyof typeof CRITICAL_ILLNESS_RATES;
-
-const getCriticalIllnessRate = (age: number, eligibility: EligibilityOption): number => {
-  let ageGroup: CriticalIllnessAgeGroup;
-
-  if (age < 24) ageGroup = '<24';
-  else if (age >= 75) ageGroup = '75+';
-  else {
-    const lowerBound = Math.floor(age / 5) * 5;
-    const upperBound = lowerBound + 4;
-    ageGroup = `${lowerBound}-${upperBound}` as CriticalIllnessAgeGroup;
-  }
-
-  return CRITICAL_ILLNESS_RATES[ageGroup][eligibility];
-};
-
 const PREMIUM_CALCULATIONS: PremiumCalculation = {
-  STD: (age, annualSalary, _plan, _lifeAddInfo, _eligibility, _zipCode, _state) => {
+  STD: (individualInfo, _plan, _lifeAddInfo, _eligibility, isOwner) => {
+    const { ownerAge, ownerAnnualSalary, employeeAge, employeeAnnualSalary } = individualInfo;
+    const age = isOwner ? ownerAge : employeeAge;
+    const annualSalary = isOwner ? ownerAnnualSalary : employeeAnnualSalary;
+    
     const grossWeeklyIncome = Math.min(annualSalary / 52, STD_CONFIG.maxCoveredWeeklyIncome);
     const grossWeeklyBenefitAmount = Math.min(grossWeeklyIncome * STD_CONFIG.benefitPercentage, STD_CONFIG.maxWeeklyBenefit);
     const units = Math.min(grossWeeklyBenefitAmount / 10, STD_CONFIG.maxUnits);
@@ -125,17 +102,18 @@ const PREMIUM_CALCULATIONS: PremiumCalculation = {
     return units * ageBandedRate;
   },
 
-  LTD: (_age, annualSalary, plan, _lifeAddInfo, _eligibility, _zipCode, _state) => {
+  LTD: (individualInfo, plan, _lifeAddInfo, _eligibility, isOwner) => {
+    const { ownerAnnualSalary, employeeAnnualSalary } = individualInfo;
+    const annualSalary = isOwner ? ownerAnnualSalary : employeeAnnualSalary;
     const grossMonthlyIncome = annualSalary / 12;
     const { maxBenefit, costPerHundred } = LTD_CONFIG[plan];
     const units = Math.min(grossMonthlyIncome / 100, maxBenefit / 100);
-    console.log("gross monthly", grossMonthlyIncome)
-    console.log("units", units)
-    console.log("total", units * costPerHundred)
     return units * costPerHundred;
   },
 
-  'Life / AD&D': (age, _annualSalary, _plan, lifeAddInfo, eligibility, _zipCode, _state) => {
+  'Life / AD&D': (individualInfo, _plan, lifeAddInfo, _eligibility, isOwner) => {
+    const { ownerAge, employeeAge } = individualInfo;
+    const age = isOwner ? ownerAge : employeeAge;
     const { employeeElectedCoverage, spouseElectedCoverage, numberOfChildren } = lifeAddInfo;
 
     const individualUnits = Math.min(employeeElectedCoverage / 1000, 150);
@@ -149,77 +127,81 @@ const PREMIUM_CALCULATIONS: PremiumCalculation = {
     return individualPremium + spousePremium + childrenPremium;
   },
 
-  Accidents: (_age, _annualSalary, plan, _lifeAddInfo, eligibility, _zipCode, _state) =>
+  Accidents: (individualInfo, plan, _lifeAddInfo, eligibility, _isOwner) =>
     ACCIDENT_PREMIUMS[plan][eligibility],
 
-  Dental: (_age, _annualSalary, plan, _lifeAddInfo, eligibility, zipCode, _state) => {
-    console.log(`Calculating Dental premium for zipCode: ${zipCode}`);
-    if (!PRODUCT_ELIGIBILITY_OPTIONS.Dental.includes(eligibility)) {
-      console.warn(`Unsupported eligibility option for Dental: ${eligibility}`);
+  Dental: (individualInfo, plan, _lifeAddInfo, eligibility, _isOwner) => {
+    const { businessZipCode } = individualInfo;
+    const region = getZipCodeRegion(businessZipCode);
+    if (region === null) {
+      console.warn(`No region found for businessZipCode: ${businessZipCode}`);
       return 0;
     }
-    const region = getZipCodeRegion(zipCode);
-  if (region === null) {
-    console.warn(`No region found for zipCode: ${zipCode}`);
-    return 0;
-  }
-
-  console.log(`Determined region: ${region} for zipCode: ${zipCode}`);
-  
-    if (
-      DENTAL_PREMIUMS[plan] &&
-      DENTAL_PREMIUMS[plan][region] &&
-      DENTAL_PREMIUMS[plan][region][eligibility]
-    ) {
-      const premium = DENTAL_PREMIUMS[plan][region][eligibility];
-      console.log(`Calculated Dental premium: ${premium}`);
-      return premium;
-    } else {
-      console.warn(`No premium found for Dental: plan=${plan}, region=${region}, eligibility=${eligibility}`);
-      return 0;
-    }
+    return DENTAL_PREMIUMS[plan][region][eligibility] || 0;
   },
 
-    Vision: (_age, _annualSalary, plan, _lifeAddInfo, eligibility, _zipCode, state) => {
-      const stateCategory = getStateCategory(state);
-      return VISION_PREMIUMS[stateCategory][plan][eligibility];
-    },
-  
-    'Critical Illness/Cancer': (age, _annualSalary, _plan, _lifeAddInfo, eligibility, _zipCode, _state) => {
-      return getCriticalIllnessRate(age, eligibility);
-    }
-  };
+  Vision: (individualInfo, plan, _lifeAddInfo, eligibility, _isOwner) => {
+    const { state } = individualInfo;
+    const stateCategory = getStateCategory(state);
+    return VISION_PREMIUMS[stateCategory][plan][eligibility];
+  },
 
-  export const calculatePremiums = (
-    individualInfo: IndividualInfo,
-    plan: Plan,
-    lifeAddInfo: LifeAddInfo,
-    productEligibility: Record<Product, EligibilityOption>,
-    selectedProduct: Product,
-    costView: CostView
-  ): Record<Product, number> => {
-    const { age, annualSalary, zipCode, state } = individualInfo;
+  'Critical Illness/Cancer': (individualInfo, _plan, _lifeAddInfo, eligibility, isOwner) => {
+    const { ownerAge, employeeAge } = individualInfo;
+    const age = isOwner ? ownerAge : employeeAge;
+    return getCriticalIllnessRate(age, eligibility);
+  }
+};
+
+export const calculatePremiums = (
+  individualInfo: IndividualInfo,
+  plan: Plan,
+  lifeAddInfo: LifeAddInfo,
+  productEligibility: Record<Product, EligibilityOption>,
+  selectedProduct: Product,
+  costView: CostView
+): Record<Product, number> => {
   const calculatePremium = PREMIUM_CALCULATIONS[selectedProduct];
 
   if (!calculatePremium) return { [selectedProduct]: 0 } as Record<Product, number>;
 
-  const premium = calculatePremium(
-    age,
-    annualSalary,
+  const ownerPremium = calculatePremium(
+    individualInfo,
     plan,
     lifeAddInfo,
     productEligibility[selectedProduct],
-    zipCode,
-    state
+    true
   );
-  const divisor = getCostViewDivisor(costView);
-  const adjustedPremium = (premium * 12) / divisor; // Convert to selected cost view
-  console.log("Premium", premium)
-  console.log("divisor", divisor)
-  console.log("adjusted premium", {[selectedProduct]: adjustedPremium} )
+
+  const employeePremium = calculatePremium(
+    individualInfo,
+    plan,
+    lifeAddInfo,
+    productEligibility[selectedProduct],
+    false
+  );
+
+  let weightedPremium: number;
+
+  if (selectedProduct === 'LTD' || selectedProduct === 'STD') {
+    weightedPremium = ownerPremium;
+  } else {
+    const totalEmployees = individualInfo.businessEmployees;
+    weightedPremium = (ownerPremium + employeePremium * totalEmployees) / (totalEmployees + 1);
+  }
+
+  // Apply cost view adjustment
+  const adjustedPremium = calculatePremiumByCostView(weightedPremium, costView);
+
+  console.log("Owner Premium", ownerPremium);
+  console.log("Employee Premium", employeePremium);
+  console.log("Weighted Premium", weightedPremium);
+  console.log("Adjusted Premium", adjustedPremium);
 
   return { [selectedProduct]: adjustedPremium } as Record<Product, number>;
 };
+
+
 
 // Use `export type` for re-exporting types
 export type {

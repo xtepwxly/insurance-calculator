@@ -4,15 +4,17 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 
 interface IndividualInfo {
-  age: number;
-  annualSalary: number;
-  zipCode: string;
-  state: string;
+  businessZipCode: string;
+  businessEmployees: number;
+  ownerAge: number;
+  ownerAnnualSalary: number;
+  employeeAge: number;
+  employeeAnnualSalary: number;
 }
 
 interface IndividualInfoFormProps {
   individualInfo: IndividualInfo;
-  handleIndividualInfoChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+  handleIndividualInfoChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const formatCurrency = (value: string) => {
@@ -26,19 +28,20 @@ const formatCurrency = (value: string) => {
 };
 
 const IndividualInfoForm: React.FC<IndividualInfoFormProps> = ({ individualInfo, handleIndividualInfoChange }) => {
-  const [annualSalary, setAnnualSalary] = useState(formatCurrency(individualInfo.annualSalary.toString()));
+  const [ownerSalary, setOwnerSalary] = useState(formatCurrency(individualInfo.ownerAnnualSalary.toString()));
+  const [employeeSalary, setEmployeeSalary] = useState(formatCurrency(individualInfo.employeeAnnualSalary.toString()));
 
-  const handleSalaryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    setAnnualSalary(value);
+  const handleSalaryChange = (setter: React.Dispatch<React.SetStateAction<string>>) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setter(e.target.value);
   };
 
-  const handleSalaryBlur = () => {
-    const formattedSalary = formatCurrency(annualSalary);
-    setAnnualSalary(formattedSalary);
+  const handleSalaryBlur = (field: 'ownerAnnualSalary' | 'employeeAnnualSalary', value: string) => {
+    const formattedSalary = formatCurrency(value);
+    if (field === 'ownerAnnualSalary') setOwnerSalary(formattedSalary);
+    else setEmployeeSalary(formattedSalary);
     handleIndividualInfoChange({
       target: {
-        name: 'annualSalary',
+        name: field,
         value: formattedSalary.replace(/[^0-9]/g, ''),
       },
     } as React.ChangeEvent<HTMLInputElement>);
@@ -46,52 +49,95 @@ const IndividualInfoForm: React.FC<IndividualInfoFormProps> = ({ individualInfo,
 
   return (
     <Card className="mb-4">
-      <CardHeader className="text-xl font-bold">Individual Information</CardHeader>
+      <CardHeader className="text-xl font-bold">About Your Business</CardHeader>
       <CardContent>
-        <div className="flex flex-col md:flex-row md:justify-between">
-          <div className="space-y-2 md:w-40">
-            <Label htmlFor="age">Age</Label>
-            <Input
-              id="age"
-              name="age"
-              type="number"
-              value={individualInfo.age}
-              onChange={handleIndividualInfoChange}
-              placeholder="Age"
-              className="w-full"
-              maxLength={2}
-            />
-          </div>
-          <div className="space-y-2 md:w-40">
-            <Label htmlFor="zipCode">Zip Code</Label>
-            <Input
-              id="zipCode"
-              name="zipCode"
-              value={individualInfo.zipCode}
-              onChange={handleIndividualInfoChange}
-              placeholder="Zip Code"
-              className="w-full"
-              maxLength={5}
-            />
-          </div>
-          <div className="space-y-2 md:w-40">
-            <Label htmlFor="annualSalary">Annual Salary</Label>
-            <Input
-              id="annualSalary"
-              name="annualSalary"
-              type="text"
-              value={annualSalary}
-              onChange={handleSalaryChange}
-              onBlur={handleSalaryBlur}
-              placeholder="Annual Salary"
-              className="w-full"
-              maxLength={10}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="space-y-2">
+            <h3 className="font-semibold">Business</h3>
+            <div>
+              <Label htmlFor="businessZipCode">Zip:</Label>
+              <Input
+                id="businessZipCode"
+                name="businessZipCode"
+                value={individualInfo.businessZipCode}
+                onChange={handleIndividualInfoChange}
+                placeholder="Business Zip Code"
+                maxLength={5}
               />
-              </div>
             </div>
-          </CardContent>
-        </Card>
-      );
-    };
-    
-    export default IndividualInfoForm;
+            <div>
+              <Label htmlFor="businessEmployees"># of Employees: {individualInfo.businessEmployees}</Label>
+              <Input
+                id="businessEmployees"
+                name="businessEmployees"
+                type="number"
+                value={individualInfo.businessEmployees}
+                onChange={handleIndividualInfoChange}
+                placeholder="Number of Employees"
+                className="w-full"
+              />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <h3 className="font-semibold">Owner</h3>
+            <div>
+              <Label htmlFor="ownerAge">Age: {individualInfo.ownerAge}</Label>
+              <Input
+                id="ownerAge"
+                name="ownerAge"
+                type="number"
+                value={individualInfo.ownerAge}
+                onChange={handleIndividualInfoChange}
+                placeholder="Owner Age"
+                className="w-full"
+              />
+            </div>
+            <div>
+              <Label htmlFor="ownerAnnualSalary">Annual Salary: {ownerSalary}</Label>
+              <Input
+                id="ownerAnnualSalary"
+                name="ownerAnnualSalary"
+                type="text"
+                value={ownerSalary}
+                onChange={handleSalaryChange(setOwnerSalary)}
+                onBlur={() => handleSalaryBlur('ownerAnnualSalary', ownerSalary)}
+                placeholder="Owner Annual Salary"
+                className="w-full"
+              />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <h3 className="font-semibold">Employees</h3>
+            <div>
+              <Label htmlFor="employeeAge">Age: {individualInfo.employeeAge}</Label>
+              <Input
+                id="employeeAge"
+                name="employeeAge"
+                type="number"
+                value={individualInfo.employeeAge}
+                onChange={handleIndividualInfoChange}
+                placeholder="Employee Age"
+                className="w-full"
+              />
+            </div>
+            <div>
+              <Label htmlFor="employeeAnnualSalary">Annual Salary: {employeeSalary}</Label>
+              <Input
+                id="employeeAnnualSalary"
+                name="employeeAnnualSalary"
+                type="text"
+                value={employeeSalary}
+                onChange={handleSalaryChange(setEmployeeSalary)}
+                onBlur={() => handleSalaryBlur('employeeAnnualSalary', employeeSalary)}
+                placeholder="Employee Annual Salary"
+                className="w-full"
+              />
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default IndividualInfoForm;
