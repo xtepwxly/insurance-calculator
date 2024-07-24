@@ -36,6 +36,8 @@ const IndividualInfoForm: React.FC<IndividualInfoFormProps> = ({ individualInfo,
       <CardHeader className="text-xl font-bold">About Your Business</CardHeader>
       <CardContent>
         <FormTypeSelector individualInfo={individualInfo} handleIndividualInfoChange={handleIndividualInfoChange} />
+                    <span className="ml-2 text-xs text-gray-500">* NOT INCLUDING OWNER</span>
+
       </CardContent>
     </Card>
   );
