@@ -45,7 +45,7 @@ const IndividualInfoForm: React.FC<IndividualInfoFormProps> = ({ individualInfo,
   };
 
   return (
-    <Card className="mb-4">
+    <Card className="mb-1">
       <CardHeader className="text-xl font-bold">Individual Information</CardHeader>
       <CardContent>
         <div className="flex flex-col md:flex-row md:justify-between">

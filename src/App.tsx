@@ -10,7 +10,7 @@ import ProductDetails from './components/ProductDetails';
 import IndividualInfoForm from './components/IndividualInfoForm';
 import ActiveProductsToggle from './components/ActiveProductsToggle';
 import { findStateByZipCode } from './utils/loadStateFromZip';
-import {CardContent, CardHeader, Card } from 'components/ui/card';
+import { CardHeader } from 'components/ui/card';
 import {Select, SelectItem, SelectTrigger, SelectValue, SelectContent } from 'components/ui/select';
 
 
@@ -104,20 +104,20 @@ function App() {
   }, [validateInputs]);
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <div className="top-0 left-0 p-4">
+    <div className="min-h-screen flex flex-col ">
+      <div className="top-0 left-0 p-4 ">
         <h1 className="text-center text-2xl font-bold">Ask Paul</h1>
       </div>
       <div className="container mx-auto p-4 flex flex-grow overflow-y-auto md:pr-10">
         <div className="main-container flex w-full md:gap-24">
           <div className="md:w-3/4 flex flex-col items-center">
-            <div className="w-full md:mb-4 md:mt-16">
+            <div className="w-full md:mb-4 md:mt-16 ">
               <IndividualInfoForm
                 individualInfo={individualInfo}
                 handleIndividualInfoChange={handleInputChange}
               />
             </div>
-            <div className="w-full">
+            <div className="custom-container">
               <div className="product-tabs-container">
                 <ProductSelector
                   selectedProduct={selectedProduct}
