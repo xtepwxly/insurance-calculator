@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import './styles/global.css';
 import './styles/ProductTabs.css';
+import TabSection from './components/TabSection';
 import './styles/App.css';
 import { Product, EligibilityOption, IndividualInfo, LifeAddInfo, Plan, PremiumResult, USState, CostView } from './utils/insuranceTypes';
 import { calculatePremiums, PRODUCTS, ELIGIBILITY_OPTIONS, PRODUCT_ELIGIBILITY_OPTIONS } from './utils/insuranceUtils';
@@ -12,7 +13,6 @@ import ActiveProductsToggle from './components/ActiveProductsToggle';
 import { findStateByZipCode } from './utils/loadStateFromZip';
 import {CardContent, CardHeader, Card } from 'components/ui/card';
 import {Select, SelectItem, SelectTrigger, SelectValue, SelectContent } from 'components/ui/select';
-
 
 const initialIndividualInfo: IndividualInfo = {
   age: 45,
@@ -119,11 +119,13 @@ function App() {
             </div>
             <div className="w-full">
               <div className="product-tabs-container">
+              {/* <TabSection /> */}
                 <ProductSelector
                   selectedProduct={selectedProduct}
                   setSelectedProduct={setSelectedProduct}
                   products={PRODUCTS}
                 />
+              
                 <ProductDetails
                   selectedProduct={selectedProduct}
                   productEligibility={productEligibility}
