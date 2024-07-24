@@ -12,7 +12,7 @@ export const Card: React.FC<CardProps> = ({ children, className = '', ...props }
 );
 
 export const CardHeader: React.FC<CardProps> = ({ children, className = '', ...props }) => (
-  <div className={`px-4 py-5 border-b border-gray-200 sm:px-6 ${className}`} {...props}>
+  <div className={`px-4 py-5 border-b border-npm-200 sm:px-6 ${className}`} {...props}>
     {children}
   </div>
 );

@@ -183,11 +183,11 @@ export const calculatePremiums = (
 
   let weightedPremium: number;
 
-  if (selectedProduct === 'LTD' || selectedProduct === 'STD') {
+  if (selectedProduct === 'LTD' || selectedProduct === 'STD' || selectedProduct === 'Accidents' || selectedProduct === 'Dental'  || selectedProduct === 'Vision' || selectedProduct === 'Life / AD&D' || selectedProduct === 'Critical Illness/Cancer') {
     weightedPremium = ownerPremium;
   } else {
     const totalEmployees = individualInfo.businessEmployees;
-    weightedPremium = (ownerPremium + employeePremium * totalEmployees) / (totalEmployees + 1);
+    weightedPremium = ((((ownerPremium * 1) + (employeePremium * totalEmployees))) / (totalEmployees + 1));
   }
 
   // Apply cost view adjustment
