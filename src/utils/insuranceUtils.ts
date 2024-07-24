@@ -127,7 +127,7 @@ const PREMIUM_CALCULATIONS: PremiumCalculation = {
     return individualPremium + spousePremium + childrenPremium;
   },
 
-  Accidents: (individualInfo, plan, _lifeAddInfo, eligibility, _isOwner) =>
+  Accident: (individualInfo, plan, _lifeAddInfo, eligibility, _isOwner) =>
     ACCIDENT_PREMIUMS[plan][eligibility],
 
   Dental: (individualInfo, plan, _lifeAddInfo, eligibility, _isOwner) => {
@@ -183,7 +183,7 @@ export const calculatePremiums = (
 
   let weightedPremium: number;
 
-  if (selectedProduct === 'LTD' || selectedProduct === 'STD' || selectedProduct === 'Accidents' || selectedProduct === 'Dental'  || selectedProduct === 'Vision' || selectedProduct === 'Life / AD&D' || selectedProduct === 'Critical Illness/Cancer') {
+  if (selectedProduct === 'LTD' || selectedProduct === 'STD' || selectedProduct === 'Accident' || selectedProduct === 'Dental'  || selectedProduct === 'Vision' || selectedProduct === 'Life / AD&D' || selectedProduct === 'Critical Illness/Cancer') {
     weightedPremium = ownerPremium;
   } else {
     const totalEmployees = individualInfo.businessEmployees;

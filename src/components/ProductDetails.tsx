@@ -111,7 +111,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
   const renderProductBoxFields = () => {
     return (
       <>
-        {['LTD', 'Accidents', 'Dental', 'Vision'].includes(selectedProduct) && (
+        {['LTD', 'Accident', 'Dental', 'Vision'].includes(selectedProduct) && (
           <RadioGroup
             value={plan}
             onValueChange={(value: string) => setPlan(value as Plan)}

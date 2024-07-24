@@ -31,7 +31,7 @@ const initialLifeAddInfo: LifeAddInfo = {
 };
 
 const initialProducts: Record<Product, boolean> = {
-  LTD: true, STD: true, 'Life / AD&D': false, Accidents: true, Vision: false, Dental: false, 'Critical Illness/Cancer': false
+  LTD: true, STD: true, 'Life / AD&D': false, Accident: true, Vision: false, Dental: false, 'Critical Illness/Cancer': false
 };
 
 function App() {

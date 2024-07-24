@@ -2,7 +2,7 @@
 
 import { Product, EligibilityOption, USState, Plan } from './insuranceTypes';
 
-export const PRODUCTS: Product[] = ['LTD', 'STD', 'Life / AD&D', 'Accidents', 'Dental', 'Vision', 'Critical Illness/Cancer'];
+export const PRODUCTS: Product[] = ['LTD', 'STD', 'Life / AD&D', 'Accident', 'Dental', 'Vision', 'Critical Illness/Cancer'];
 
 export const ELIGIBILITY_OPTIONS: EligibilityOption[] = ['Individual', 'Individual + Spouse', 'Individual + Children', 'Family'];
 
@@ -18,7 +18,7 @@ export const PRODUCT_ELIGIBILITY_OPTIONS: Record<Product, EligibilityOption[]> =
   LTD: ['Individual'],
   STD: ['Individual'],
   'Life / AD&D': ['Individual', 'Individual + Spouse', 'Individual + Children', 'Family'],
-  Accidents: ['Individual', 'Individual + Spouse', 'Individual + Children', 'Family'],
+  Accident: ['Individual', 'Individual + Spouse', 'Individual + Children', 'Family'],
   Dental: ['Individual', 'Individual + Spouse', 'Individual + Children', 'Family'],
   Vision: ['Individual', 'Individual + Spouse', 'Individual + Children', 'Family'],
   'Critical Illness/Cancer': ['Individual', 'Individual + Spouse', 'Individual + Children', 'Family'],
@@ -194,7 +194,7 @@ export const PRODUCT_BULLET_POINTS: Record<Product, Record<Plan, string[]>> = {
       "Coverage for spouse and children"
     ]
   },
-  'Accidents': {
+  'Accident': {
     'Basic': [
       "Pays on and off job",
       "Large benefit payouts",

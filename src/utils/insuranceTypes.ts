@@ -1,6 +1,6 @@
 // utils/insuranceTypes.ts
 
-export type Product = 'LTD' | 'STD' | 'Life / AD&D' | 'Accidents' | 'Dental' | 'Vision' | 'Critical Illness/Cancer';
+export type Product = 'LTD' | 'STD' | 'Life / AD&D' | 'Accident' | 'Dental' | 'Vision' | 'Critical Illness/Cancer';
 
 export type EligibilityOption = 'Individual' | 'Individual + Spouse' | 'Individual + Children' | 'Family';
 
@@ -36,7 +36,7 @@ export interface PremiumResult {
 }
 
 // If you need to export the arrays of options, you can do so like this:
-export const PRODUCTS: Product[] = ['LTD', 'STD', 'Life / AD&D', 'Accidents', 'Dental', 'Vision', 'Critical Illness/Cancer'];
+export const PRODUCTS: Product[] = ['LTD', 'STD', 'Life / AD&D', 'Accident', 'Dental', 'Vision', 'Critical Illness/Cancer'];
 export const ELIGIBILITY_OPTIONS: EligibilityOption[] = ['Individual', 'Individual + Spouse', 'Individual + Children', 'Family'];
 export const US_STATES: USState[] = [
   'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',

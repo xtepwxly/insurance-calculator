@@ -35,7 +35,7 @@ const getProductIcon = (product: Product): string => {
     case 'LTD': return '🛡️';
     case 'STD': return '🏥';
     case 'Life / AD&D': return '💼';
-    case 'Accidents': return '🚑';
+    case 'Accident': return '🚑';
     case 'Vision': return '👁️';
     case 'Dental': return '🦷';
     case 'Critical Illness/Cancer': return '🏥';
