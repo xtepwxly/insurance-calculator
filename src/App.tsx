@@ -166,10 +166,11 @@ function App() {
   </SelectContent>
 </Select>
         </CardHeader>
-        <CostEstimate
+            <CostEstimate
               totalPremium={calculateTotalPremium()}
               costView={costView}
               setCostView={setCostView}
+              businessEmployees={individualInfo.businessEmployees}
             />
             <ActiveProductsToggle
               products={products}
