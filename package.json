@@ -15,6 +15,7 @@
     "build:css": "tailwindcss build src/index.css -o src/tailwind.output.css"
   },
   "dependencies": {
+    "@headlessui/react": "^2.1.2",
     "@radix-ui/react-select": "^1.2.1",
     "@radix-ui/react-tabs": "^1.0.3",
     "@radix-ui/react-toggle": "^1.0.2",
