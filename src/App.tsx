@@ -18,9 +18,9 @@ const initialIndividualInfo: IndividualInfo = {
   businessZipCode: '07030',
   businessEmployees: 3,
   ownerAge: 45,
-  ownerAnnualSalary: 400000,
+  ownerAnnualSalary: 200000,
   employeeAge: 35,
-  employeeAnnualSalary: 50000,
+  employeeAnnualSalary: 30000,
   state: 'NJ' as USState
 };
 

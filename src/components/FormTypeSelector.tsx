@@ -44,6 +44,8 @@ const getType = (props: IndividualInfoFormProps, ownerSalary, setOwnerSalary, ha
               value={props.individualInfo.businessEmployees}
               onChange={props.handleIndividualInfoChange}
               placeholder="Number of Employees"
+              min={0}
+              max={10}
             />
           </div>
         </>

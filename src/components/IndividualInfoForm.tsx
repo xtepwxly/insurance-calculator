@@ -5,6 +5,7 @@ import { Label } from './ui/label';
 import FormTypeSelector from './FormTypeSelector';
 
 
+
 interface IndividualInfo {
   businessZipCode: string;
   businessEmployees: number;
