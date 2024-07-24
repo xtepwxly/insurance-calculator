@@ -6,7 +6,7 @@
   width: 100%;
 }
 
-.dropdown-btn {
+/* .dropdown-btn {
   background: #3B82F6;
   font-size: 14px;
   width: 100%;
@@ -18,7 +18,7 @@
   padding: 0.7em 0.5em;
   border-radius: 0.5em;
   cursor: pointer;
-}
+} */
 
 .arrow {
   border-left: 5px solid transparent;
@@ -27,7 +27,7 @@
   transition: transform ease-in-out 0.3s;
 }
 
-.dropdown-content {
+/* .dropdown-content {
   list-style: none;
   position: absolute;
   top: 3.2em;
@@ -58,7 +58,7 @@
 
 .dropdown-content li:hover {
   background: #1d1f24;
-}
+} */
 
 .arrow.arrow-rotate {
   transform: rotate(180deg);

@@ -9,6 +9,7 @@ import { Alert, AlertDescription } from './ui/alert';
 import { Product, EligibilityOption, Plan, LifeAddInfo, IndividualInfo, CostView } from '../utils/insuranceTypes';
 import { PRODUCT_BULLET_POINTS, PRODUCT_ELIGIBILITY_OPTIONS } from '../utils/insuranceConfig';
 import { calculatePremiumByCostView } from '../utils/insuranceUtils';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from './ui/select';
 
 
 interface ProductDetailsProps {
@@ -178,21 +179,21 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
   };
 
   const renderEligibilityField = () => {
-    const dropdownClass = (selectedProduct === 'Life / AD&D' ? 'dropdown dropdown-wide' : 'dropdown') + ' md:min-w-52';
-    return (
-      <div className={dropdownClass}>
-        <button className="dropdown-btn" onClick={toggleDropdown}>
-          <span>{productEligibility[selectedProduct] || "Select eligibility"}</span>
-          <span className={`arrow ${isDropdownOpen ? 'arrow-rotate' : ''}`}></span>
-        </button>
-        <ul className={`dropdown-content ${isDropdownOpen ? 'menu-open' : ''}`}>
-          {PRODUCT_ELIGIBILITY_OPTIONS[selectedProduct].map((option) => (
-            <li key={option} onClick={() => handleOptionClick(option)}>
-              <a href="#">{option}</a>
-            </li>
-          ))}
-        </ul>
-      </div>
+    return (        
+        <Select
+          value={productEligibility[selectedProduct]} 
+          onValueChange={(option: EligibilityOption) => handleOptionClick(option)}
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue>{productEligibility[selectedProduct]}</SelectValue>
+          </SelectTrigger>
+
+          <SelectContent>
+            {PRODUCT_ELIGIBILITY_OPTIONS[selectedProduct].map((option) => (
+              <SelectItem value={option}>{option}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
     );
   };
 
@@ -207,7 +208,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
     <Card className='border-solid border-2'>
       <CardHeader className="sticky top-0 bg-white z-10 flex justify-between items-center">
         <h3 className="md:text-lg font-semibold">{selectedProduct}</h3>
-        <div className="flex space-x-4 items-center">
+        <div className="flex space-x-4 items-center md:text-lg font-semibold">
           {renderProductBoxFields()}
           {renderEligibilityField()}
         </div>
