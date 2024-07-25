@@ -20,24 +20,13 @@ export interface IndividualInfoFormProps {
   handleIndividualInfoChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const formatCurrency = (value: string) => {
-  const numberValue = parseFloat(value.replace(/[^0-9]/g, ''));
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(isNaN(numberValue) ? 0 : numberValue);
-};
-
 const IndividualInfoForm: React.FC<IndividualInfoFormProps> = ({ individualInfo, handleIndividualInfoChange }) => {
   return (
     <Card className="mb-4">
       <CardHeader className="text-xl font-bold">About Your Business</CardHeader>
       <CardContent>
         <FormTypeSelector individualInfo={individualInfo} handleIndividualInfoChange={handleIndividualInfoChange} />
-                    <span className="ml-2 text-xs text-gray-500">* NOT INCLUDING OWNER</span>
-
+        <span className="ml-2 text-xs text-gray-500">* NOT INCLUDING OWNER</span>
       </CardContent>
     </Card>
   );

@@ -1,18 +1,17 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import './styles/global.css';
 import './styles/ProductTabs.css';
-import TabSection from './components/TabSection';
 import './styles/App.css';
 import { Product, EligibilityOption, IndividualInfo, LifeAddInfo, Plan, PremiumResult, USState, CostView } from './utils/insuranceTypes';
-import { calculatePremiums, PRODUCTS, ELIGIBILITY_OPTIONS, PRODUCT_ELIGIBILITY_OPTIONS } from './utils/insuranceUtils';
+import { calculatePremiums, PRODUCTS, PRODUCT_ELIGIBILITY_OPTIONS } from './utils/insuranceUtils';
 import CostEstimate from './components/CostEstimate';
 import ProductSelector from './components/ProductSelector';
 import ProductDetails from './components/ProductDetails';
 import IndividualInfoForm from './components/IndividualInfoForm';
 import ActiveProductsToggle from './components/ActiveProductsToggle';
 import { findStateByZipCode } from './utils/loadStateFromZip';
-import {CardContent, CardHeader, Card } from 'components/ui/card';
-import {Select, SelectItem, SelectTrigger, SelectValue, SelectContent } from 'components/ui/select';
+import { CardHeader } from 'components/ui/card';
+import { Select, SelectItem, SelectTrigger, SelectValue, SelectContent } from 'components/ui/select';
 
 const initialIndividualInfo: IndividualInfo = {
   businessZipCode: '07030',
@@ -51,7 +50,7 @@ function App() {
     const { name, value } = e.target;
     setIndividualInfo((prev) => {
       const updatedInfo = { ...prev, [name]: value };
-      if (name === 'zipCode' && value.length === 5) {
+      if (name === 'businessZipCode' && value.length === 5) {
         const state = findStateByZipCode(value) as USState | null;
         return { ...updatedInfo, state: state ?? prev.state };
       }
@@ -122,7 +121,6 @@ function App() {
             </div>
             <div className="w-full">
               <div className="product-tabs-container">
-              {/* <TabSection /> */}
                 <ProductSelector
                   selectedProduct={selectedProduct}
                   setSelectedProduct={setSelectedProduct}
@@ -147,37 +145,40 @@ function App() {
               </div>
             </div>
           </div>
+          
           <div className="rightrail w-1/4 space-y-4 overflow-y-auto">
-          <CardHeader className="md:text-lg font-semibold flex justify-between items-center">
-          Cost View
-          <Select 
-        value={costView} 
-        onValueChange={(value: CostView) => setCostView(value)}
-      >
-                <SelectTrigger className="w-[180px]">
-          <SelectValue>{costView}</SelectValue>
-        </SelectTrigger>
+            <CardHeader className="md:text-lg font-semibold flex justify-between items-center">
+                Cost View
+                <Select 
+                  value={costView} 
+                  onValueChange={(value: CostView) => setCostView(value)}
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue>{costView}</SelectValue>
+                  </SelectTrigger>
 
-  <SelectContent>
-    <SelectItem value="Monthly">Monthly</SelectItem>
-    <SelectItem value="Semi-Monthly">Semi-Monthly</SelectItem>
-    <SelectItem value="Weekly">Weekly</SelectItem>
-    <SelectItem value="Annual">Annual</SelectItem>
-  </SelectContent>
-</Select>
-        </CardHeader>
-            <CostEstimate
-              totalPremium={calculateTotalPremium()}
-              costView={costView}
-              setCostView={setCostView}
-              businessEmployees={individualInfo.businessEmployees}
-            />
-            <ActiveProductsToggle
-              products={products}
-              handleProductToggle={handleProductToggle}
-              premiums={premiums}
-              costView={costView}
-            />
+                  <SelectContent>
+                    <SelectItem value="Monthly">Monthly</SelectItem>
+                    <SelectItem value="Semi-Monthly">Semi-Monthly</SelectItem>
+                    <SelectItem value="Weekly">Weekly</SelectItem>
+                    <SelectItem value="Annual">Annual</SelectItem>
+                  </SelectContent>
+                </Select>
+              </CardHeader>
+              
+              <CostEstimate
+                totalPremium={calculateTotalPremium()}
+                costView={costView}
+                setCostView={setCostView}
+                businessEmployees={individualInfo.businessEmployees}
+              />
+
+              <ActiveProductsToggle
+                products={products}
+                handleProductToggle={handleProductToggle}
+                premiums={premiums}
+                costView={costView}
+              />
           </div>
         </div>
       </div>
