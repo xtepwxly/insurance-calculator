@@ -1,231 +1,95 @@
-import React, { useState } from 'react';
-import '../styles/Dropdown.css';
-import '../styles/global.css';
-import { Card, CardHeader, CardContent } from './ui/card';
+import React, { useEffect, useRef } from 'react';
+import { Product, Plan, IndividualInfo, EligibilityOption, CostView } from '../utils/insuranceTypes';
+import { PRODUCT_BULLET_POINTS } from '../utils/insuranceConfig';
+import { ELIGIBILITY_OPTIONS } from '../utils/insuranceTypes';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
-import { Input } from './ui/input';
-import { Alert, AlertDescription } from './ui/alert';
-import { Product, EligibilityOption, Plan, LifeAddInfo, IndividualInfo, CostView } from '../utils/insuranceTypes';
-import { PRODUCT_BULLET_POINTS, PRODUCT_ELIGIBILITY_OPTIONS } from '../utils/insuranceConfig';
-import { calculatePremiumByCostView } from '../utils/insuranceUtils';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from './ui/select';
-
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { hasMultiplePlans } from '../utils/insuranceUtils';
 
 interface ProductDetailsProps {
   selectedProduct: Product;
-  productEligibility: Record<Product, EligibilityOption>;
-  handleEligibilityChange: (eligibility: EligibilityOption) => void;
-  plan: Plan;
-  setPlan: (newPlan: Plan) => void;
+  plans: Record<Product, Plan>;
+  setProductPlan: (product: Product, plan: Plan) => void;
   premium: number;
-  lifeAddInfo: LifeAddInfo;
-  handleLifeAddInfoChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  individualInfo: IndividualInfo;
+  handleIndividualInfoChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | { name: string; value: string | number }, personType: 'owner' | 'employee' | 'business') => void;
   errors: Record<string, string>;
   costView: CostView;
-  individualInfo: IndividualInfo;
-  handleIndividualInfoChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
-  PRODUCT_ELIGIBILITY_OPTIONS: Record<Product, EligibilityOption[]>;
+  recalculatePremium: (product: Product, plan: Plan) => void;
+  personType: 'owner' | 'employee';
 }
-
-const formatCurrency = (value: string) => {
-  const numberValue = parseFloat(value.replace(/[^0-9]/g, ''));
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(isNaN(numberValue) ? 0 : numberValue);
-};
 
 const ProductDetails: React.FC<ProductDetailsProps> = ({
   selectedProduct,
-  productEligibility,
-  handleEligibilityChange,
-  plan,
-  setPlan,
+  plans,
+  setProductPlan,
+  recalculatePremium,
   premium,
-  lifeAddInfo,
-  handleLifeAddInfoChange,
-  errors,
-  costView,
   individualInfo,
   handleIndividualInfoChange,
-  PRODUCT_ELIGIBILITY_OPTIONS
+  errors,
+  costView,
+  personType, // Add this line
 }) => {
-  const bulletPoints = PRODUCT_BULLET_POINTS[selectedProduct][plan];
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [employeeElectedCoverage, setEmployeeElectedCoverage] = useState(formatCurrency(lifeAddInfo.employeeElectedCoverage.toString()));
-  const [spouseElectedCoverage, setSpouseElectedCoverage] = useState(formatCurrency(lifeAddInfo.spouseElectedCoverage.toString()));
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
+  const currentPlan = plans[selectedProduct];
+  const bulletPoints = PRODUCT_BULLET_POINTS[selectedProduct][currentPlan];
+  useEffect(() => {
+    if (selectedProduct === 'LTD') {
+      // For LTD, only recalculate if annualSalary or plan changes
+      if (previousAnnualSalary.current !== individualInfo[personType].annualSalary || previousPlan.current !== currentPlan) {
+        recalculatePremium(selectedProduct, currentPlan);
+        previousAnnualSalary.current = individualInfo[personType].annualSalary;
+        previousPlan.current = currentPlan;
+      }
+    } else {
+      // For other products, recalculate as before
+      recalculatePremium(selectedProduct, currentPlan);
+    }
+  }, [individualInfo, selectedProduct, currentPlan, recalculatePremium, personType]);
+  
+  // Add these at the top of your component
+  const previousAnnualSalary = useRef(individualInfo[personType].annualSalary);
+  const previousPlan = useRef(currentPlan);
 
-  const handleOptionClick = (option: EligibilityOption) => {
-    handleEligibilityChange(option);
-    setIsDropdownOpen(false);
-  };
-
-  const handleEmployeeCoverageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    setEmployeeElectedCoverage(value);
-  };
-
-  const handleEmployeeCoverageBlur = () => {
-    const formattedCoverage = formatCurrency(employeeElectedCoverage);
-    setEmployeeElectedCoverage(formattedCoverage);
-    handleLifeAddInfoChange({
-      target: {
-        name: 'employeeElectedCoverage',
-        value: formattedCoverage.replace(/[^0-9]/g, ''),
-      },
-    } as React.ChangeEvent<HTMLInputElement>);
-  };
-
-  const handleSpouseCoverageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    setSpouseElectedCoverage(value);
-  };
-
-  const handleSpouseCoverageBlur = () => {
-    const formattedCoverage = formatCurrency(spouseElectedCoverage);
-    setSpouseElectedCoverage(formattedCoverage);
-    handleLifeAddInfoChange({
-      target: {
-        name: 'spouseElectedCoverage',
-        value: formattedCoverage.replace(/[^0-9]/g, ''),
-      },
-    } as React.ChangeEvent<HTMLInputElement>);
-  };
-
-  const renderIndividualInfoFields = () => {
-    switch (selectedProduct) {
-      case 'STD':
-        return <></>;
-      default:
-        return null;
+  const handlePlanChange = (value: string) => {
+    if (value === 'Basic' || value === 'Premium') {
+      setProductPlan(selectedProduct, value as Plan);
+      recalculatePremium(selectedProduct, value as Plan);
     }
   };
 
-  const renderProductBoxFields = () => {
-    return (
-      <>
-        {['LTD', 'Accident', 'Dental', 'Vision'].includes(selectedProduct) && (
-          <RadioGroup
-            value={plan}
-            onValueChange={(value: string) => setPlan(value as Plan)}
-            className="flex space-x-4"
-          >
-            <RadioGroupItem value="Basic">Basic</RadioGroupItem>
-            <RadioGroupItem value="Premium">Premium</RadioGroupItem>
-          </RadioGroup>
-        )}
-
-        {selectedProduct === 'Life / AD&D' && (
-          <>
-            <div>
-              <Label htmlFor="employeeElectedCoverage">Employee Elected Coverage</Label>
-              <Input
-                id="employeeElectedCoverage"
-                name="employeeElectedCoverage"
-                type="text"
-                value={employeeElectedCoverage}
-                onChange={handleEmployeeCoverageChange}
-                onBlur={handleEmployeeCoverageBlur}
-              />
-              {errors.employeeElectedCoverage && (
-                <Alert variant="destructive">
-                  <AlertDescription>{errors.employeeElectedCoverage}</AlertDescription>
-                </Alert>
-              )}
-            </div>
-            {(productEligibility[selectedProduct] === 'Individual + Spouse' ||
-              productEligibility[selectedProduct] === 'Family') && (
-              <div>
-                <Label htmlFor="spouseElectedCoverage">Spouse Elected Coverage</Label>
-                <Input
-                  id="spouseElectedCoverage"
-                  name="spouseElectedCoverage"
-                  type="text"
-                  value={spouseElectedCoverage}
-                  onChange={handleSpouseCoverageChange}
-                  onBlur={handleSpouseCoverageBlur}
-                />
-                {errors.spouseElectedCoverage && (
-                  <Alert variant="destructive">
-                    <AlertDescription>{errors.spouseElectedCoverage}</AlertDescription>
-                  </Alert>
-                )}
-              </div>
-            )}
-            {(productEligibility[selectedProduct] === 'Individual + Children' ||
-              productEligibility[selectedProduct] === 'Family') && (
-              <div>
-                <Label htmlFor="numberOfChildren">Number of Children</Label>
-                <Input
-                  id="numberOfChildren"
-                  name="numberOfChildren"
-                  type="number"
-                  value={lifeAddInfo.numberOfChildren}
-                  onChange={handleLifeAddInfoChange}
-                />
-              </div>
-            )}
-          </>
-        )}
-      </>
-    );
+  const handleEligibilityChange = (value: EligibilityOption) => {
+    handleIndividualInfoChange({ name: 'eligibility', value }, 'owner');
   };
 
-  const renderEligibilityField = () => {
-    return (        
-        <Select
-          value={productEligibility[selectedProduct]} 
-          onValueChange={(option: EligibilityOption) => handleOptionClick(option)}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue>{productEligibility[selectedProduct]}</SelectValue>
-          </SelectTrigger>
-
-          <SelectContent>
-            {PRODUCT_ELIGIBILITY_OPTIONS[selectedProduct].map((option) => (
-              <SelectItem value={option}>{option}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-    );
-  };
-
-  const formattedPremium = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(calculatePremiumByCostView(premium, costView));
-  
   return (
-    <Card className='border-solid border-2'>
-      <CardHeader className="sticky top-0 bg-white z-10 flex justify-between items-center">
-        <h3 className="md:text-lg font-semibold">{selectedProduct}</h3>
-        <div className="flex space-x-4 items-center md:text-lg font-semibold">
-          {renderProductBoxFields()}
-          {renderEligibilityField()}
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4 relative">
-        <ul className="list-disc list-inside mt-2">
-          {bulletPoints.map((point, index) => (
-            <li key={index}>{point}</li>
-          ))}
-        </ul>
-        {renderIndividualInfoFields()}
-        <div className="bottom-0 right-0 p-4">
-          <p className="md:text-lg font-semibold">{costView} Premium: {formattedPremium}</p>
-        </div>
-      </CardContent>
-    </Card>
-  );
+    <div className="product-details">
+      <h2 className="text-2xl font-bold mb-4">{selectedProduct}</h2>
+      {hasMultiplePlans(selectedProduct) && (
+      <div className="mb-4">
+        <Label>Plan</Label>
+        <RadioGroup value={currentPlan} onValueChange={handlePlanChange}>
+          <RadioGroupItem value="Basic">Basic</RadioGroupItem>
+          <RadioGroupItem value="Premium">Premium</RadioGroupItem>
+        </RadioGroup>
+      </div>
+    )}
+    <div className="mb-4">
+      <h3 className="text-lg font-semibold">Features:</h3>
+      <ul className="list-disc pl-5">
+        {bulletPoints.map((point, index) => (
+          <li key={index}>{point}</li>
+        ))}
+      </ul>
+    </div>
+    <div className="mb-4">
+      <h3 className="text-lg font-semibold">Cost:</h3>
+      <p className="text-xl font-semi">${premium.toFixed(2)} / {costView.toLowerCase()}</p>
+    </div>
+  </div>
+);
 };
 
 export default ProductDetails;

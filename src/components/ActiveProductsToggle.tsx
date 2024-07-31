@@ -1,52 +1,39 @@
 import React from 'react';
-import { Card, CardHeader, CardContent } from './ui/card';
-import { Toggle } from './ui/toggle';
-import { Product, PremiumResult, CostView} from '../utils/insuranceTypes';  // Adjust the import path as needed
-import { calculatePremiumByCostView} from '../utils/insuranceUtils';  
+import { Product, CostView } from '../utils/insuranceTypes';
+import { CardTitle, Card, CardContent, CardHeader } from './ui/card';
 
-
-interface ActiveProductsToggleProps {
+interface ActiveProductsListProps {
   products: Record<Product, boolean>;
-  handleProductToggle: (product: Product) => void;
-  premiums: PremiumResult;
+  premiums: Record<Product, number>;
   costView: CostView;
 }
 
-const ActiveProductsToggle: React.FC<ActiveProductsToggleProps> = ({ 
-  products, 
-  handleProductToggle, 
-  premiums, 
-  costView 
+const ActiveProductsList: React.FC<ActiveProductsListProps> = ({
+  products,
+  premiums,
+  costView,
 }) => {
   return (
-    <Card className="test">
-      <CardHeader className="test">Active Products</CardHeader>
-      <CardContent className="test">
-        <p className="mb-2 text-sm text-gray-500">{costView} premium per employee</p>
-        {Object.entries(products).map(([product, active]) => {
-          const premium = premiums[product] || 0;
-          const formattedPremium = new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-          }).format(calculatePremiumByCostView(premium, costView));
-          return (
-            <div key={product} className="mb-2 flex justify-between items-center">
-              <Toggle
-                pressed={active}
-                onPressedChange={() => handleProductToggle(product as Product)}
-                className={active ? "bg-blue-500 text-white" : ""}
-              >
-                {product}
-              </Toggle>
-              <span className="text-sm">{formattedPremium}</span>
-            </div>
-          );
-        })}
+    <Card>
+      <CardHeader>
+        <CardTitle>Active Products</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-2">
+          {Object.entries(products)
+            .filter(([_, isActive]) => isActive)
+            .map(([product]) => (
+              <div key={product} className="flex items-center justify-between">
+                <span className="font-medium">{product}</span>
+                <span className="text-sm">
+                  ${premiums[product as Product]?.toFixed(2) || '0.00'} / {costView.toLowerCase()}
+                </span>
+              </div>
+            ))}
+        </div>
       </CardContent>
     </Card>
   );
 };
 
-export default ActiveProductsToggle;
+export default ActiveProductsList;

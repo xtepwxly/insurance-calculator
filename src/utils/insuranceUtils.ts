@@ -1,16 +1,18 @@
 // utils/insuranceUtils.ts
+import { type ClassValue, clsx } from "clsx"
+import { twMerge } from "tailwind-merge"
 
 import {
   Product,
   EligibilityOption,
   USState,
   Plan,
-  LifeAddInfo,
   IndividualInfo,
   PRODUCTS,
   ELIGIBILITY_OPTIONS,
   US_STATES,
-  CostView
+  CostView,
+  calculatePremiumByCostView
 } from './insuranceTypes';
 
 import {
@@ -28,36 +30,54 @@ import {
   AGE_BANDED_RATES_LIFE
 } from './insuranceConfig';
 
-// ... (keep existing utility functions)
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
 
-type PremiumCalculation = {
-  [K in Product]: (
-    individualInfo: IndividualInfo,
-    plan: Plan,
-    lifeAddInfo: LifeAddInfo,
-    eligibility: EligibilityOption,
-    isOwner: boolean
-  ) => number;
+export function hasMultiplePlans(product: Product): boolean {
+  return !['STD', 'Life / AD&D', 'Critical Illness/Cancer'].includes(product);
+}
+
+const getAgeBandRate = (age: number, ageBandRates: typeof AGE_BANDED_RATES): number => {
+  const ageBand = ageBandRates.find(band => age >= band.minAge && age <= band.maxAge);
+  return ageBand ? ageBand.rate : ageBandRates[ageBandRates.length - 1].rate;
 };
 
-const getAgeBandedRate = (age: number): number => {
-  const ageBand = AGE_BANDED_RATES_LIFE.find(band => age >= band.minAge && age <= band.maxAge);
-  return ageBand ? ageBand.rate : 0;
-};
+const getZipCodeRegion = (zipCode: string | number | null | undefined): number | null => {
+  // Convert to string and trim
+  const zipString = String(zipCode || '').trim();
+  console.log(`Getting region for zip code: ${zipCode}`);
 
-const getZipCodeRegion = (zipCode: string): number | null => {
-  const zipPrefix = zipCode.substring(0, 3);
+
+  // Check if the resulting string is empty or not a valid zip code format
+  if (!zipString || !/^\d{5}$/.test(zipString)) {
+    console.log(`Processed zip code: ${zipString}`);
+
+    return null;
+  }
+
+  const zipPrefix = zipString.substring(0, 3);
+  console.log(`Zip prefix: ${zipPrefix}`);
   for (const region in ZIP_CODE_REGIONS) {
     if (ZIP_CODE_REGIONS[region].includes(zipPrefix)) {
+      console.log(`Found region: ${region}`);
+
       return parseInt(region, 10);
     }
   }
+  console.warn(`No region found for zip prefix: ${zipPrefix}`);
+
   return null;
 };
 
 const getStateCategory = (state: USState): string => {
   return Object.keys(STATE_CATEGORIES).find(category => STATE_CATEGORIES[category].includes(state)) || 'Other';
 };
+const validateZipCode = (zipCode: string): boolean => {
+  return /^\d{5}$/.test(zipCode);
+};
+
+export { getZipCodeRegion, getStateCategory, validateZipCode };
 
 const getCriticalIllnessRate = (age: number, eligibility: EligibilityOption): number => {
   let ageGroup: keyof typeof CRITICAL_ILLNESS_RATES;
@@ -70,150 +90,205 @@ const getCriticalIllnessRate = (age: number, eligibility: EligibilityOption): nu
     ageGroup = `${lowerBound}-${upperBound}` as keyof typeof CRITICAL_ILLNESS_RATES;
   }
 
-  return CRITICAL_ILLNESS_RATES[ageGroup][eligibility];
+  // Default to 'Individual' if eligibility is undefined
+  const safeEligibility = eligibility || 'Individual';
+
+  return CRITICAL_ILLNESS_RATES[ageGroup][safeEligibility];
 };
 
-export function calculatePremiumByCostView(premium: number, costView: CostView): number {
-  switch (costView) {
-    case 'Monthly':
-      return premium;
-    case 'Weekly':
-      return premium / 4;  // Approximately 52 weeks / 12 months
-    case 'Semi-Monthly':
-      return premium / 2;
-    case 'Annual':
-      return premium * 12;
-    default:
-      console.warn(`Unexpected cost view: ${costView}. Returning monthly premium.`);
-      return premium;
+
+
+type PremiumCalculation = {
+  [K in Product]: (
+    individualInfo: IndividualInfo,
+    plan: Plan,
+    personType: 'owner' | 'employee'
+  ) => number;
+};
+
+export function calculateSTDPremium(individualInfo: IndividualInfo, plan: Plan, personType: 'owner' | 'employee'): number {
+  // Always use 'Basic' plan for STD
+  const  stdPlan: Plan = 'Basic';
+    
+  const person = individualInfo[personType];
+  const { annualSalary, age } = person;
+
+  const grossWeeklyIncome = annualSalary / STD_CONFIG.weeks;
+  
+  // Calculate benefit amount
+  const weeklyBenefitAmount = grossWeeklyIncome * STD_CONFIG.benefitAmountKey;
+  
+  // Apply maxCoverageAmount to the weekly benefit
+  const cappedWeeklyBenefit = Math.min(weeklyBenefitAmount, STD_CONFIG.maxCoverageAmount);
+  
+  // Calculate units based on the capped weekly benefit
+  const units = cappedWeeklyBenefit / STD_CONFIG.unitsKey;
+  
+  // Apply maxUnits
+  const unitsMax = Math.min(units, STD_CONFIG.maxUnits);
+  
+  const ageBandRate = getAgeBandRate(age, STD_CONFIG.ageBandRates);
+
+  const monthlyPremiums = unitsMax * ageBandRate;
+  
+  console.log('STD Calculation Result:', {
+    unitsMax,
+    units,
+    ageBandRate,
+    monthlyPremiums
   }
+);
+return monthlyPremiums
 }
 
+export function calculateLTDPremium(individualInfo: IndividualInfo, plan: Plan, personType: 'owner' | 'employee'): number {
+  const person = individualInfo[personType];
+  const { annualSalary } = person;
+
+  console.log('LTD Calculation Input:', { annualSalary, plan, personType });
+
+  const maxUnits = LTD_CONFIG.maxUnits[plan];
+  const costPerHundred = LTD_CONFIG.costPerHundred[plan];
+
+  // Calculate monthly salary
+  const monthlySalary = annualSalary / 12;
+
+  // Calculate units (monthly salary / 100)
+  const units = monthlySalary / 100;
+
+  // Apply maxUnits based on the plan
+  const finalUnits = Math.min(units, maxUnits);
+
+  // Calculate monthly premium
+  const monthlyPremium = finalUnits * costPerHundred;
+
+  console.log('LTD Calculation Result:', {
+    monthlySalary,
+    units,
+    maxUnits,
+    finalUnits,
+    costPerHundred,
+    monthlyPremium
+  });
+
+  return monthlyPremium;
+}
+
+export function calculateLifeADDPremium(individualInfo: IndividualInfo, plan: Plan, personType: 'owner' | 'employee'): number {
+  const person = individualInfo[personType];
+  const { age, employeeCoverage, spouseCoverage, numberOfChildren, eligibility } = person;
+
+  // Calculate individual premium
+  const units_individual = Math.min(employeeCoverage / LIFE_ADD_CONFIG.units, LIFE_ADD_CONFIG.units_max_individual);
+  const monthly_premium_individual = units_individual * getAgeBandRate(age, LIFE_ADD_CONFIG.ageBandRates);
+
+  let monthly_premium_spouse = 0;
+  let monthly_premium_children = 0;
+
+  // Calculate spouse premium for 'Individual + Spouse' and 'Family' eligibility
+  if (eligibility === 'Individual + Spouse' || eligibility === 'Family') {
+    const max_coverage_spouse = Math.min(
+      LIFE_ADD_CONFIG.max_coverage_amount_spouse,
+      employeeCoverage * LIFE_ADD_CONFIG.max_coverage_amount_spouse_conditional
+    );
+    const units_spouse = Math.min(spouseCoverage, max_coverage_spouse) / LIFE_ADD_CONFIG.units;
+    const units_max_spouse = Math.min(units_spouse, LIFE_ADD_CONFIG.units_max_spouse);
+    monthly_premium_spouse = units_max_spouse * getAgeBandRate(age, LIFE_ADD_CONFIG.ageBandRates);
+  }
+
+  // Calculate children premium for 'Individual + Children' and 'Family' eligibility
+  if (eligibility === 'Individual + Children' || eligibility === 'Family') {
+    monthly_premium_children = Math.min(numberOfChildren, LIFE_ADD_CONFIG.max_number_of_children) * LIFE_ADD_CONFIG.children_rate;
+  }
+
+  // Sum up all applicable premiums
+  const total_premium = monthly_premium_individual + monthly_premium_spouse + monthly_premium_children;
+
+  console.log('Individual Premium:', monthly_premium_individual);
+  console.log('Spouse Premium:', monthly_premium_spouse);
+  console.log('Children Premium:', monthly_premium_children);
+  console.log('Total Premium:', total_premium);
+
+  return total_premium;
+}
+
+export const Dental = (individualInfo: IndividualInfo, plan: Plan, personType: 'owner' | 'employee'): number => {
+  const { businessZipCode } = individualInfo;
+  
+  const region = getZipCodeRegion(businessZipCode);
+  if (region === null) {
+    console.warn(`No region found for businessZipCode: ${businessZipCode}`);
+    return 0;
+  }
+  
+  const premium = DENTAL_PREMIUMS[region]?.[plan]?.[individualInfo[personType].eligibility] || 0;{}
+  return premium;
+};
+
+
 const PREMIUM_CALCULATIONS: PremiumCalculation = {
-  STD: (individualInfo, _plan, _lifeAddInfo, _eligibility, isOwner) => {
-    const { ownerAge, ownerAnnualSalary, employeeAge, employeeAnnualSalary } = individualInfo;
-    const age = isOwner ? ownerAge : employeeAge;
-    const annualSalary = isOwner ? ownerAnnualSalary : employeeAnnualSalary;
-    
-    const grossWeeklyIncome = Math.min(annualSalary / 52, STD_CONFIG.maxCoveredWeeklyIncome);
-    const grossWeeklyBenefitAmount = Math.min(grossWeeklyIncome * STD_CONFIG.benefitPercentage, STD_CONFIG.maxWeeklyBenefit);
-    const units = Math.min(grossWeeklyBenefitAmount / 10, STD_CONFIG.maxUnits);
-    const ageBandedRate = AGE_BANDED_RATES.find(band => age >= band.minAge && age <= band.maxAge)?.rate || 0.66;
-    return units * ageBandedRate;
-  },
-
-  LTD: (individualInfo, plan, _lifeAddInfo, _eligibility, isOwner) => {
-    const { ownerAnnualSalary, employeeAnnualSalary } = individualInfo;
-    const annualSalary = isOwner ? ownerAnnualSalary : employeeAnnualSalary;
-    const grossMonthlyIncome = annualSalary / 12;
-    const { maxBenefit, costPerHundred } = LTD_CONFIG[plan];
-    const units = Math.min(grossMonthlyIncome / 100, maxBenefit / 100);
-    return units * costPerHundred;
-  },
-
-  'Life / AD&D': (individualInfo, _plan, lifeAddInfo, _eligibility, isOwner) => {
-    const { ownerAge, employeeAge } = individualInfo;
-    const age = isOwner ? ownerAge : employeeAge;
-    const { employeeElectedCoverage, spouseElectedCoverage, numberOfChildren } = lifeAddInfo;
-
-    const individualUnits = Math.min(employeeElectedCoverage / 1000, 150);
-    const individualPremium = individualUnits * getAgeBandedRate(age);
-
-    const spouseUnits = Math.min(spouseElectedCoverage / 1000, 20);
-    const spousePremium = spouseUnits * getAgeBandedRate(age);
-
-    const childrenPremium = numberOfChildren > 0 ? 2.5 : 0;
-
-    return individualPremium + spousePremium + childrenPremium;
-  },
-
-  Accident: (individualInfo, plan, _lifeAddInfo, eligibility, _isOwner) =>
-    ACCIDENT_PREMIUMS[plan][eligibility],
-
-  Dental: (individualInfo, plan, _lifeAddInfo, eligibility, _isOwner) => {
-    const { businessZipCode } = individualInfo;
-    const region = getZipCodeRegion(businessZipCode);
-    if (region === null) {
-      console.warn(`No region found for businessZipCode: ${businessZipCode}`);
-      return 0;
-    }
-    return DENTAL_PREMIUMS[plan][region][eligibility] || 0;
-  },
-
-  Vision: (individualInfo, plan, _lifeAddInfo, eligibility, _isOwner) => {
+  STD: calculateSTDPremium,
+  LTD: calculateLTDPremium,
+  'Life / AD&D': calculateLifeADDPremium,
+  Accident: (individualInfo, plan, personType) =>
+    ACCIDENT_PREMIUMS[plan][individualInfo[personType].eligibility],
+  Dental: Dental,
+  
+  Vision: (individualInfo, plan, personType) => {
     const { state } = individualInfo;
     const stateCategory = getStateCategory(state);
-    return VISION_PREMIUMS[stateCategory][plan][eligibility];
+    return VISION_PREMIUMS[stateCategory][plan][individualInfo[personType].eligibility];
   },
-
-  'Critical Illness/Cancer': (individualInfo, _plan, _lifeAddInfo, eligibility, isOwner) => {
-    const { ownerAge, employeeAge } = individualInfo;
-    const age = isOwner ? ownerAge : employeeAge;
+  'Critical Illness/Cancer': (individualInfo, plan, personType) => {
+    const person = individualInfo[personType];
+    const { age, eligibility } = person;
     return getCriticalIllnessRate(age, eligibility);
   }
+  
 };
+console.log("DENTALLLLLLLLL", Dental)
+
+
 
 export const calculatePremiums = (
   individualInfo: IndividualInfo,
   plan: Plan,
-  lifeAddInfo: LifeAddInfo,
-  productEligibility: Record<Product, EligibilityOption>,
   selectedProduct: Product,
   costView: CostView
-): Record<Product, number> => {
+): number => {
   const calculatePremium = PREMIUM_CALCULATIONS[selectedProduct];
 
-  if (!calculatePremium) return { [selectedProduct]: 0 } as Record<Product, number>;
+  if (!calculatePremium) return 0;
 
-  const ownerPremium = calculatePremium(
-    individualInfo,
-    plan,
-    lifeAddInfo,
-    productEligibility[selectedProduct],
-    true
-  );
+  const ownerPremium = calculatePremium(individualInfo, plan, 'owner');
+  const employeePremium = calculatePremium(individualInfo, plan, 'employee');
 
-  const employeePremium = calculatePremium(
-    individualInfo,
-    plan,
-    lifeAddInfo,
-    productEligibility[selectedProduct],
-    false
-  );
+  // Ensure both owner and employee have a valid eligibility
+  if (!individualInfo.owner.eligibility) individualInfo.owner.eligibility = 'Individual';
+  if (!individualInfo.employee.eligibility) individualInfo.employee.eligibility = 'Individual';
 
-  let weightedPremium: number;
-
-  if (selectedProduct === 'LTD' || selectedProduct === 'STD' || selectedProduct === 'Accident' || selectedProduct === 'Dental'  || selectedProduct === 'Vision' || selectedProduct === 'Life / AD&D' || selectedProduct === 'Critical Illness/Cancer') {
-    weightedPremium = ownerPremium;
-  } else {
-    const totalEmployees = individualInfo.businessEmployees;
-    weightedPremium = ((((ownerPremium * 1) + (employeePremium * totalEmployees))) / (totalEmployees + 1));
-  }
+  const totalEmployees = individualInfo.businessEmployees;
+  const weightedPremium = ((ownerPremium * 1) + (employeePremium * totalEmployees)) / (totalEmployees + 1);
 
   // Apply cost view adjustment
   const adjustedPremium = calculatePremiumByCostView(weightedPremium, costView);
+  
+  console.log("Owner Premium", "Plan:", plan, ownerPremium);
+  console.log("Employee Premium","Plan:", plan, employeePremium);
+  console.log("Weighted Premium", "Plan:", plan, weightedPremium);
+  console.log("Adjusted Premium", "Plan:", plan, adjustedPremium);
 
-  console.log("Owner Premium", ownerPremium);
-  console.log("Employee Premium", employeePremium);
-  console.log("Weighted Premium", weightedPremium);
-  console.log("Adjusted Premium", adjustedPremium);
-
-  return { [selectedProduct]: adjustedPremium } as Record<Product, number>;
+  return adjustedPremium;
 };
 
-
-
-// Use `export type` for re-exporting types
 export type {
   Product,
   EligibilityOption,
   USState,
   Plan,
-  LifeAddInfo,
   IndividualInfo
 };
 
-// Use `export` for re-exporting constants
 export {
   PRODUCTS,
   ELIGIBILITY_OPTIONS,

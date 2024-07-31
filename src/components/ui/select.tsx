@@ -1,20 +1,24 @@
-import React, { ReactElement, ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { CostView } from 'utils/insuranceTypes';
 
 interface SelectProps<T> extends React.SelectHTMLAttributes<HTMLSelectElement> {
+  children: ReactNode;
   onValueChange?: (value: T) => void;
+  className?: string;
 }
 
-export const Select = React.forwardRef<HTMLSelectElement, SelectProps<any>>( // don't like this "any"
-  <T,>({ children, onValueChange, ...props } : SelectProps<T>, ref: React.Ref<HTMLSelectElement>) => (
-    <select
-      ref={ref}
-      className={`rounded-xl p-1 ${Select || ''}`} // Add rounded-xl class here
-      onChange={(e) => onValueChange && onValueChange(e.target.value as unknown as T)}
-      {...props}
-    >
-      {children}
-    </select>
+export const Select = React.forwardRef<HTMLSelectElement, SelectProps<any>>( // Use generics instead of "any"
+  <T,>({ children, onValueChange, className, ...props }: SelectProps<T>, ref: React.Ref<HTMLSelectElement>) => (
+    <div className="flex justify-center md:mb-1  md:mt-1"> {/* Center the select element within its container */}
+      <select
+        ref={ref}
+        className={`w-full border-solid	rounded-xl p-2 text-center text-base font-medium ${className || ''}`} // Add rounded-xl, padding, text-center, text size, and font weight
+        onChange={(e) => onValueChange && onValueChange(e.target.value as unknown as T)}
+        {...props}
+      >
+        {children}
+      </select>
+    </div>
   )
 );
 

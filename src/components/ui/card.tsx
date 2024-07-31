@@ -1,4 +1,6 @@
 import React from 'react';
+import { cn } from 'utils/insuranceUtils';
+
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
@@ -6,7 +8,7 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export const Card: React.FC<CardProps> = ({ children, className = '', ...props }) => (
-  <div className={`bg-white shadow-md rounded-xl ${className}`} {...props}>
+  <div className={`bg-white shadow-md rounded-xl py-1 px-4	 ${className}`} {...props}>
     {children}
   </div>
 );
@@ -22,3 +24,19 @@ export const CardContent: React.FC<CardProps> = ({ children, className = '', ...
     {children}
   </div>
 );
+
+export const CardTitle = React.forwardRef<
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLHeadingElement>>
+(({ className, ...props }, ref) => (
+  <h3
+    ref={ref}
+    className={cn(
+      "text-2xl font-semibold leading-none tracking-tight",
+      className
+    )}
+    {...props}
+  />
+))
+
+CardTitle.displayName = "CardTitle"

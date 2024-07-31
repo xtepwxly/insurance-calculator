@@ -49,23 +49,6 @@ export const AGE_BANDED_RATES_LIFE = [
   { minAge: 70, maxAge: Infinity, rate: 2.71 },
 ];
 
-export const LTD_CONFIG = {
-  Basic: { maxBenefit: 8333.33, costPerHundred: 0.209 },
-  Premium: { maxBenefit: 15000, costPerHundred: 0.305 }
-};
-
-export const STD_CONFIG = {
-  maxCoveredWeeklyIncome: 2000, // Add this line
-  maxWeeklyBenefit: 1100,       // Change this from 1200 to 1100
-  benefitPercentage: 0.6,
-  maxUnits: 110
-};
-
-export const LIFE_ADD_CONFIG = {
-  baseRate: 0.20,
-  childCoverage: 10000
-};
-
 export const ACCIDENT_PREMIUMS: Record<Plan, Record<EligibilityOption, number>> = {
   Basic: { Individual: 7.94, 'Individual + Spouse': 15.07, 'Individual + Children': 18.89, Family: 22.27 },
   Premium: { Individual: 11.74, 'Individual + Spouse': 23.05, 'Individual + Children': 27.68, Family: 32.67 }
@@ -175,12 +158,7 @@ export const PRODUCT_BULLET_POINTS: Record<Product, Record<Plan, string[]>> = {
       "Benefit maximum of $1,200 per week",
       "Guaranteed Issue"
     ],
-    'Premium': [
-      "Income protection",
-      "Covers pregnancy",
-      "Benefit maximum of $1,200 per week",
-      "Guaranteed Issue"
-    ]
+    'Premium': []
   },
   'Life / AD&D': {
     'Basic': [
@@ -244,4 +222,64 @@ export const PRODUCT_BULLET_POINTS: Record<Product, Record<Plan, string[]>> = {
       "Dozens of covered illnesses"
     ]
   }
+};
+
+export const STD_CONFIG = {
+  benefitAmountKey: 0.6,
+  unitsKey: 10,
+  maxCoverageAmount: 1100,
+  maxUnits: 110,
+  weeks: 52,
+  ageBandRates: [
+    { minAge: 0, maxAge: 29, rate: 0.25 },
+    { minAge: 30, maxAge: 34, rate: 0.25 },
+    { minAge: 35, maxAge: 39, rate: 0.25 },
+    { minAge: 40, maxAge: 44, rate: 0.25 },
+    { minAge: 45, maxAge: 49, rate: 0.30 },
+    { minAge: 50, maxAge: 54, rate: 0.38 },
+    { minAge: 55, maxAge: 59, rate: 0.46 },
+    { minAge: 60, maxAge: 64, rate: 0.55 },
+    { minAge: 65, maxAge: Infinity, rate: 0.66 }
+  ],
+  plan: 'Basic' as Plan // Add this line to explicitly set the plan for STD
+};
+
+export const LTD_CONFIG = {
+  unitKey: 100,
+  costPerHundred: {
+    Basic: 0.209,
+    Premium: 0.305
+  },
+  maxBenefitAmount: {
+    Basic: 8333.33,
+    Premium: 15000
+  },
+  maxUnits: {
+    Basic: 83.33,
+    Premium: 250
+  },
+  weeks: 52
+};
+
+export const LIFE_ADD_CONFIG = {
+  max_coverage_amount_individual: 150000,
+  max_coverage_amount_spouse: 20000,
+  max_coverage_amount_spouse_conditional: 0.5, // 50% of individual coverage
+  max_number_of_children: 4,
+  units: 1000,
+  units_max_individual: 150,
+  units_max_spouse: 20,
+  children_rate: 2.50,
+  ageBandRates: [
+    { minAge: 0, maxAge: 29, rate: 0.11 },
+    { minAge: 30, maxAge: 34, rate: 0.13 },
+    { minAge: 35, maxAge: 39, rate: 0.15 },
+    { minAge: 40, maxAge: 44, rate: 0.18 },
+    { minAge: 45, maxAge: 49, rate: 0.26 },
+    { minAge: 50, maxAge: 54, rate: 0.40 },
+    { minAge: 55, maxAge: 59, rate: 0.59 },
+    { minAge: 60, maxAge: 64, rate: 0.89 },
+    { minAge: 65, maxAge: 69, rate: 1.68 },
+    { minAge: 70, maxAge: Infinity, rate: 2.71 }
+  ]
 };
